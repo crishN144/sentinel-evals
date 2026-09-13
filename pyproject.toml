@@ -1,0 +1,15 @@
+[project]
+name = "sentinel-evals"
+version = "0.1.0"
+description = "Allowlist-relative unauthorized-egress detection for agentic evaluations"
+requires-python = ">=3.10"
+license = {text = "Apache-2.0"}
+dependencies = []
+[project.optional-dependencies]
+inspect = ["inspect_ai", "inspect_scout", "pyyaml"]
+dev = ["pytest"]
+[project.scripts]
+sentinel = "sentinel.cli:main"
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
