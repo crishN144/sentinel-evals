@@ -358,7 +358,7 @@ def build():
         elif kind == "fig":
             path, cap, w = payload
             p = d.add_paragraph(style="normal"); p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-            p.add_run().add_picture(str(path), width=Inches(w))
+            p.add_run().add_picture(str(path), width=Inches(w)); p.paragraph_format.keep_with_next = True
             c = d.add_paragraph(style="normal"); r = c.add_run(cap); r.font.size = Pt(9.5); r.italic = True
             c.paragraph_format.space_after = Pt(8)
         elif kind == "tbl":
@@ -376,9 +376,15 @@ def build():
             c = d.add_paragraph(style="normal"); r = c.add_run(cap); r.font.size = Pt(9.5); r.italic = True
             c.paragraph_format.space_after = Pt(8)
     # body font size: template body runs are 12pt via style defaults; set explicit 11pt for the 4-page budget
+    for t in d.tables[1:]:
+        for row in t.rows:
+            for cell in row.cells:
+                for pp in cell.paragraphs:
+                    for r in pp.runs: r.font.name = "Old Standard TT"
     for p in d.paragraphs:
         if p.style.name == "normal":
             for r in p.runs:
+                r.font.name = "Old Standard TT"
                 if r.font.size is None: r.font.size = Pt(10.5)
             p.paragraph_format.line_spacing = 1.0
     OUT.parent.mkdir(exist_ok=True)
