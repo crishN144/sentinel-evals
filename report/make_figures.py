@@ -61,27 +61,56 @@ fig.savefig(ROOT / "report/figures/fig1_ablation.png", dpi=300, facecolor="white
 print("fig1 written; rows:", [(r[0].split("\n")[0], r[1]["event_index"] if r[1] else None) for r in rows])
 
 # ---------- Fig 2: what each layer can and cannot establish ----------
-fig, ax = plt.subplots(figsize=(10.2, 3.25), dpi=300)
+from matplotlib.patches import Rectangle
+MONO = "Menlo"
+fig, ax = plt.subplots(figsize=(10.2, 4.6), dpi=300)
 fig.patch.set_facecolor("white"); ax.set_facecolor("white"); ax.axis("off")
-ax.set_xlim(0, 10.2); ax.set_ylim(-0.25, 3.0)
-boxes = [
-    (0.15, "1  Declared scope", "allowlist.json:\nhosts, suffixes, CIDRs,\ninternet_expected", SLATE, "this paper"),
-    (2.75, "2  Declared action", "tool-call arguments,\nstated destination,\nclassified against scope", SLATE, "this paper (Sentinel)"),
-    (5.35, "3  Observed action", "egress flow logs\n(Hubble / Squid) diffed\nagainst the same scope", GREY, "not implemented"),
-    (7.95, "4  Attestation", "third party replays\n(trace, allowlist, verdict)\nfrom files alone", SLATE, "Track 1 test"),
+ax.set_xlim(0, 10.2); ax.set_ylim(0, 4.6)
+LIGHT_SLATE, LIGHT_SAND = "#e8eef5", "#f3eee5"
+
+# title + subtitle (same voice as Fig 1)
+ax.text(0.15, 4.42, "Four layers of containment evidence", fontsize=13, fontweight="bold", color=INK, va="center")
+ax.text(0.15, 4.16, "Sentinel checks what the agent said it would reach (2) against what the evaluation declared (1). "
+        "Nothing on this row prevents anything.", fontsize=9, color=GREY, va="center")
+
+# the evidence row: four cards
+cards = [
+    (0.15, "1", "Declared scope", "what the evaluation permits", 'allowed_hosts:\n  api.openai.com\n  artifactory.internal', SLATE, LIGHT_SLATE, "solid"),
+    (2.70, "2", "Declared action", "what the agent said it would reach", 'event 3  curl https://\n  cybergym-…modal.run\n  → OUT of scope', SLATE, LIGHT_SLATE, "solid"),
+    (5.25, "3", "Observed action", "what the network actually saw", 'flow log  10.0.3.4 →\n  34.x.x.x:443\n  vs the same allowlist', GREY, "white", "dashed"),
+    (7.80, "4", "Attestation", "what a third party can recompute", 'PAGE @3\nfrom (trace, allowlist)\nno lab network needed', SAND, LIGHT_SAND, "solid"),
 ]
-for x, head, body, col, tag in boxes:
-    ax.add_patch(FancyBboxPatch((x, 0.85), 2.1, 1.6, boxstyle="round,pad=0.02,rounding_size=0.08",
-                                fc="white", ec=col, lw=1.6))
-    ax.text(x + 0.12, 2.22, head, fontsize=10.5, fontweight="bold", color=col, va="center")
-    ax.text(x + 0.12, 1.55, body, fontsize=8.8, color=INK, va="center", linespacing=1.35)
-    ax.text(x + 0.12, 0.6, tag, fontsize=8.5, color=col, style="italic", va="center")
-for x in (2.25, 4.85, 7.45):
-    ax.add_patch(FancyArrowPatch((x + 0.02, 1.62), (x + 0.48, 1.62), arrowstyle="-|>", mutation_scale=12, color=GREY, lw=1.2))
-ax.text(0.27, 2.85, "Four layers of containment evidence. A scanner checks layer 2 against layer 1; it prevents nothing.",
-        fontsize=12.5, fontweight="bold", color=INK, va="center")
-ax.text(0.27, 0.1, "Prevention lives elsewhere: default-deny egress and a hardened permitted proxy. Layer 3 is the complement that turns 'isolation assumed' into 'isolation attested'.",
-        fontsize=8.8, color=GREY, va="center")
+y0, h, w = 1.55, 2.25, 2.05
+for x, n, head, sub, ex, col, fill, ls in cards:
+    ax.add_patch(FancyBboxPatch((x, y0), w, h, boxstyle="round,pad=0.02,rounding_size=0.10",
+                                fc=fill, ec=col, lw=1.5, ls=ls))
+    # number badge
+    ax.add_patch(plt.Circle((x + 0.28, y0 + h - 0.30), 0.16, fc=col, ec="none"))
+    ax.text(x + 0.28, y0 + h - 0.30, n, ha="center", va="center", fontsize=9.5, fontweight="bold", color="white")
+    ax.text(x + 0.55, y0 + h - 0.30, head, fontsize=11, fontweight="bold", color=col if col != SAND else "#7d6a4d", va="center")
+    ax.text(x + 0.12, y0 + h - 0.66, sub, fontsize=8.3, color=GREY, va="center", style="italic")
+    # example strip
+    ax.add_patch(Rectangle((x + 0.12, y0 + 0.14), w - 0.24, 1.05, fc="white", ec="#e3ddd3", lw=0.8))
+    ax.text(x + 0.20, y0 + 0.66, ex, fontsize=7.6, color=INK, va="center", family=MONO, linespacing=1.45)
+# arrows with verbs
+for x, verb in ((2.22, "checked\nagainst"), (4.77, "diffed vs\nscope"), (7.32, "replayed\nfrom files")):
+    ax.add_patch(FancyArrowPatch((x + 0.04, y0 + 0.66), (x + 0.44, y0 + 0.66), arrowstyle="-|>", mutation_scale=11, color=GREY, lw=1.1))
+    ax.text(x + 0.24, y0 + 0.80, verb, ha="center", va="bottom", fontsize=6.6, color=GREY, linespacing=1.2)
+# brackets under the row: what is built vs not vs the test
+def bracket(x1, x2, y, label, col):
+    ax.plot([x1, x1, x2, x2], [y + 0.08, y, y, y + 0.08], color=col, lw=1.1)
+    ax.text((x1 + x2)/2, y - 0.16, label, ha="center", va="top", fontsize=8.6, color=col, fontweight="bold")
+bracket(0.15, 4.75, 1.38, "built here: Sentinel (Apache-2.0, 15 tests)", SLATE)
+bracket(5.25, 7.30, 1.38, "not built: one month of follow-up", GREY)
+bracket(7.80, 9.85, 1.38, "the Track 1 criterion", "#7d6a4d")
+
+# the prevention row: visibly a different thing
+ax.plot([0.15, 9.85], [0.80, 0.80], color="#d8d2c8", lw=0.8, ls=(0, (2, 3)))
+ax.add_patch(FancyBboxPatch((0.15, 0.10), 9.7, 0.58, boxstyle="round,pad=0.02,rounding_size=0.08", fc="#faf6f0", ec="#d8d2c8", lw=1.0))
+ax.text(0.32, 0.38, "PREVENTION", fontsize=8.5, fontweight="bold", color=CRIMSON, va="center")
+ax.text(1.45, 0.39, "default-deny egress · a hardened permitted proxy · production classifiers left on.\n"
+        "These stop escapes. They live inside the lab and produce no third-party evidence; this paper adds none of them.",
+        fontsize=8.0, color=INK, va="center", linespacing=1.35)
 fig.subplots_adjust(left=0, right=1, top=1, bottom=0)
 fig.savefig(ROOT / "report/figures/fig2_layers.png", dpi=300, facecolor="white")
 print("fig2 written")

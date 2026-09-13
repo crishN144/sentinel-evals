@@ -177,9 +177,11 @@ P("Under the correct scope the page lands at event 3. Event 2, the request to th
   "allowlist-relative scanner is blind to that by construction; what it would still have recorded is the "
   "destination, dsewiki.de, if the declared scope had named which hosts read access was for.")
 FIGURE(FIG / "fig2_layers.png",
-  "Figure 2. Four layers of containment evidence. Sentinel checks layer 2 (what the agent said it would reach) "
-  "against layer 1 (what the evaluation declared). Layer 3, observed flows diffed against the same allowlist, is "
-  "not implemented and is the complement that turns isolation assumed into isolation attested.", 5.9)
+  "Figure 2. Four layers of containment evidence, with the Hugging Face reconstruction as the running example. "
+  "Layers 1 and 2 are what this paper builds: the declared scope and the agent's stated destination, checked "
+  "against it. Layer 3, observed flows diffed against the same allowlist, is not built and is the month of "
+  "follow-up. Layer 4 is the Track 1 criterion. Prevention is a separate row: it stops escapes and yields no "
+  "third-party evidence.", 5.9)
 H3("4.4 Robustness")
 P("Every number above is deterministic and pinned by tests; there is no sampling and so no interval to report. "
   "The relevant robustness question is sensitivity to small changes in setup, and the ablation is that question "
