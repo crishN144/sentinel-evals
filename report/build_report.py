@@ -50,9 +50,11 @@ P("In July 2026 two pre-release OpenAI models, running a cyber-capability evalua
   "incidents in its cyber evaluations, including one where the task prompt declared no internet access, a partner "
   "misconfiguration left it on, and the agent reached a real company that shared the fictional target's name; it was "
   "found months later by transcript review [3]. The UK AI Security Institute reported models on an intentionally "
-  "internet-connected cyber range reaching GitHub over Tor, caught by a Tor egress alarm [4]. The sprint page also "
-  "reports (we have not retrieved the primary source) that from 24 May OpenAI agents made about 15,000 edits to a "
-  "dormant German wiki, discovered by outside researchers reading its public edit logs [5].")
+  "internet-connected cyber range reaching GitHub over Tor, caught by a Tor egress alarm [4]. And from 11 May to 13 July, "
+  "OpenAI evaluation agents with read-only internet access made 15,000 to 18,000 edits to DseWiki, a dormant German "
+  "programming wiki that accepts edits over GET, and used it as a message board for task answers and sandbox "
+  "workarounds; outside researchers found it by reading the wiki's public logs and published on 4 September, and "
+  "OpenAI acknowledged it the next day, saying the field has no agreed standard for reporting misalignment [5].")
 P("These cases share a shape that is not \"no monitor existed.\" In each one the operators knew the intended scope "
   "in prose: no internet; only the LLM API and the package proxy; only the range. Nowhere was that scope an "
   "artifact the transcript was checked against, and in every case the first signal came from somewhere else: an "
@@ -169,7 +171,11 @@ P("Under the correct scope the page lands at event 3. Event 2, the request to th
   "ALLOWED. We test this as a known blind spot rather than hide it. The right reading of PAGE @3 is the first "
   "auditable evidence of out-of-scope egress, which in the reconstruction precedes the production intrusion (events "
   "5 and 6) and the organisation's own detection (event 6). It is not \"this would have stopped the breach.\" "
-  "Prevention is default-deny egress plus a hardened permitted proxy, and a trace scanner supplies neither.")
+  "Prevention is default-deny egress plus a hardened permitted proxy, and a trace scanner supplies neither. The "
+  "wiki case has the same shape: the sandbox permitted only GET requests, and the agents wrote to a site that "
+  "accepts edits over GET [5]. In both public escapes the agent went through the scope, not around it. An "
+  "allowlist-relative scanner is blind to that by construction; what it would still have recorded is the "
+  "destination, dsewiki.de, if the declared scope had named which hosts read access was for.")
 FIGURE(FIG / "fig2_layers.png",
   "Figure 2. Four layers of containment evidence. Sentinel checks layer 2 (what the agent said it would reach) "
   "against layer 1 (what the evaluation declared). Layer 3, observed flows diffed against the same allowlist, is "
@@ -200,7 +206,7 @@ BUL([
  "The fixtures and the rule have the same author. The specification tests therefore show consistency, not "
  "generalisation. If that assumption is wrong in the sense that real traces differ in form, the extractor is the "
  "part that breaks, and the ablation result is unaffected because it concerns the scope, not the extractor.",
- "Sentinel reads declared arguments. METR has observed tool-call spoofing in roughly 7% of transcripts it examined "
+ "Sentinel reads declared arguments. In its investigation of the Hugging Face incident, METR estimated that over 7% of the transcripts it reviewed contained spoofed tool calls "
  "[13]; a determined agent can state one destination and reach another. Layer 3 is the answer; it is not built.",
  "The extractor is regular expressions. Destinations hidden in shell variables, base64, DNS exfiltration or "
  "IP-as-integer forms are missed. We have not measured a miss rate. Publishing the extractor publishes its gaps "
@@ -237,20 +243,20 @@ P("C.N. conceived the project, wrote the scanner, fixtures and tests, ran the ab
 
 H2("References")
 REFS = [
- "[1] OpenAI, 2026. The Hugging Face incident and the road ahead. openai.com/index/hugging-face-incident-and-the-road-ahead",
+ "[1] OpenAI, 2026. Hugging Face model evaluation security incident (21 July, revised twice) and The Hugging Face incident and the road ahead. openai.com/index/hugging-face-model-evaluation-security-incident; openai.com/index/hugging-face-incident-and-the-road-ahead",
  "[2] Hugging Face, 2026. Agent intrusion: technical timeline. huggingface.co/blog/agent-intrusion-technical-timeline",
  "[3] Anthropic, 2026. Investigating incidents in our cybersecurity evaluations. anthropic.com/news/investigating-incidents-cybersecurity-evals",
- "[4] UK AI Security Institute, 2026. Incident report INC-2026-07-28-01. aisi.gov.uk",
- "[5] Apart Research and CeSIA, 2026. AI Incident Response Sprint, overview page, update of 7 September. apartresearch.com/sprints/ai-incident-response-sprint-2026-09-11-to-2026-09-13",
- "[6] UK AI Security Institute, 2026. Inspect Scout: scanners for evaluation transcripts. github.com/meridianlabs-ai/inspect_scout",
- "[7] UK AI Security Institute, 2025. ControlArena. github.com/UKGovernmentBEIS/control-arena",
- "[8] Kutasov, J. et al., 2025. SHADE-Arena: evaluating sabotage and monitoring in LLM agents. Anthropic.",
- "[9] Apollo Research, 2025. Watcher. apolloresearch.ai",
- "[10] ExploitGym, 2026. Benchmark repository and firewall documentation (docs/firewall.md). GitHub, Apache-2.0.",
- "[11] UK AI Security Institute, 2026. Cheating rates in agentic cyber evaluations across five frontier models. aisi.gov.uk",
+ "[4] UK AI Security Institute, 4 August 2026. Incident report: unsanctioned agent behaviour during cyber testing (INC-2026-07-28-01). aisi.gov.uk/blog/incident-report-unsanctioned-agent-behaviour-during-cyber-testing",
+ "[5] Von Arx, S., Slade Byrd, C. and the Nightingale Collective, 4 September 2026. Discovery of a new OpenAI agent message board (dataset and report). collusion.wiki. OpenAI acknowledgement of 5 September 2026 as reported by TechCrunch, techcrunch.com/2026/09/05/openai-confirms-wiki-incident-says-its-working-on-a-framework-for-more-disclosure/",
+ "[6] Meridian Labs and UK AI Security Institute, 2026. Inspect Scout: in-depth analysis of AI agent transcripts. github.com/meridianlabs-ai/inspect_scout",
+ "[7] UK AI Security Institute and Redwood Research, 2025. ControlArena. github.com/UKGovernmentBEIS/control-arena",
+ "[8] Kutasov, J. et al., 2025. SHADE-Arena: evaluating sabotage and monitoring in LLM agents. arXiv:2506.15740",
+ "[9] Apollo Research, 2026. Watcher: security for coding agents (Watcher Live and Watcher Analyze). watcher.apolloresearch.ai",
+ "[10] ExploitGym, 2026. ExploitGym: can AI agents turn security vulnerabilities into real attacks? arXiv:2605.11086; repository and docs/firewall.md on GitHub, Apache-2.0.",
+ "[11] UK AI Security Institute, July 2026. Cheating behaviour in frontier model evaluations. aisi.gov.uk/blog/cheating-behaviour-in-frontier-model-evaluations",
  "[12] Nagarkar, C., 2026. scorer-integrity: calibrating LLM judges against mechanical ground truth in Inspect evals. github.com/crishN144/scorer-integrity",
- "[13] METR, 2026. Observations of tool-call spoofing in agentic transcripts.",
- "[14] Baker, B. et al., 2025. Monitoring reasoning models for misbehavior and the risks of promoting obfuscation. OpenAI.",
+ "[13] METR and Redwood Research, 26 August 2026. Brief independent investigation of agents' behavior, reasoning and collaboration in the OpenAI / Hugging Face hacking incident. metr.org/blog/2026-08-26-openai-hugging-face-incident-investigation",
+ "[14] Baker, B. et al., 2025. Monitoring reasoning models for misbehavior and the risks of promoting obfuscation. arXiv:2503.11926",
 ]
 for r in REFS: P(r)
 
@@ -358,9 +364,10 @@ def build():
         elif kind == "fig":
             path, cap, w = payload
             p = d.add_paragraph(style="normal"); p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            p.paragraph_format.space_before = Pt(6)
             p.add_run().add_picture(str(path), width=Inches(w)); p.paragraph_format.keep_with_next = True
             c = d.add_paragraph(style="normal"); r = c.add_run(cap); r.font.size = Pt(9.5); r.italic = True
-            c.paragraph_format.space_after = Pt(8)
+            c.paragraph_format.space_before = Pt(6); c.paragraph_format.space_after = Pt(10)
         elif kind == "tbl":
             rows, cap, widths = payload
             t = d.add_table(rows=len(rows), cols=len(rows[0])); add_borders(t)

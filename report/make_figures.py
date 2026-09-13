@@ -61,9 +61,9 @@ fig.savefig(ROOT / "report/figures/fig1_ablation.png", dpi=300, facecolor="white
 print("fig1 written; rows:", [(r[0].split("\n")[0], r[1]["event_index"] if r[1] else None) for r in rows])
 
 # ---------- Fig 2: what each layer can and cannot establish ----------
-fig, ax = plt.subplots(figsize=(10.2, 3.0), dpi=300)
+fig, ax = plt.subplots(figsize=(10.2, 3.25), dpi=300)
 fig.patch.set_facecolor("white"); ax.set_facecolor("white"); ax.axis("off")
-ax.set_xlim(0, 10.2); ax.set_ylim(0, 3.0)
+ax.set_xlim(0, 10.2); ax.set_ylim(-0.25, 3.0)
 boxes = [
     (0.15, "1  Declared scope", "allowlist.json:\nhosts, suffixes, CIDRs,\ninternet_expected", SLATE, "this paper"),
     (2.75, "2  Declared action", "tool-call arguments,\nstated destination,\nclassified against scope", SLATE, "this paper (Sentinel)"),
@@ -75,12 +75,12 @@ for x, head, body, col, tag in boxes:
                                 fc="white", ec=col, lw=1.6))
     ax.text(x + 0.12, 2.22, head, fontsize=10.5, fontweight="bold", color=col, va="center")
     ax.text(x + 0.12, 1.55, body, fontsize=8.8, color=INK, va="center", linespacing=1.35)
-    ax.text(x + 0.12, 0.55, tag, fontsize=8.5, color=col, style="italic", va="center")
+    ax.text(x + 0.12, 0.6, tag, fontsize=8.5, color=col, style="italic", va="center")
 for x in (2.25, 4.85, 7.45):
     ax.add_patch(FancyArrowPatch((x + 0.02, 1.62), (x + 0.48, 1.62), arrowstyle="-|>", mutation_scale=12, color=GREY, lw=1.2))
-ax.text(0.15, 2.85, "Four layers of containment evidence. A scanner checks layer 2 against layer 1; it prevents nothing.",
+ax.text(0.27, 2.85, "Four layers of containment evidence. A scanner checks layer 2 against layer 1; it prevents nothing.",
         fontsize=12.5, fontweight="bold", color=INK, va="center")
-ax.text(0.15, 0.12, "Prevention lives elsewhere: default-deny egress and a hardened permitted proxy. Layer 3 is the complement that turns 'isolation assumed' into 'isolation attested'.",
+ax.text(0.27, 0.1, "Prevention lives elsewhere: default-deny egress and a hardened permitted proxy. Layer 3 is the complement that turns 'isolation assumed' into 'isolation attested'.",
         fontsize=8.8, color=GREY, va="center")
 fig.subplots_adjust(left=0, right=1, top=1, bottom=0)
 fig.savefig(ROOT / "report/figures/fig2_layers.png", dpi=300, facecolor="white")

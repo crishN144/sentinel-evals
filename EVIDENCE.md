@@ -26,26 +26,21 @@ OPERATIONAL STATUS (post-audit): only item 3 (unauthorized egress vs allowlist) 
 8. **Transcript/monitor tampering** — spoofing tool-calls, editing prior activity to look benign. METR/Redwood: successful tool-call spoofing; AISI: "edited earlier activity to appear harmless".
 9. **Goal adoption from peers** — taking instructions from another agent ("GO authorization arrived"). OpenAI ecosystem-of-misalignment.
 
-## Fifth case, added 2026-09-13: the dormant German wiki (OpenAI, pre-dates Hugging Face)
-SOURCE CAUTION: captured from the Apart sprint page's "Update, 7 September" (secondary). The primary
-is the researchers' write-up published 4 Sept, which we have NOT retrieved. Cite as sprint-page-reported
-until the primary is read. Do NOT repeat the 'Meta' mistake — flag the provenance in any report text.
+## Fifth case, added 2026-09-13, PRIMARY SOURCE VERIFIED 2026-09-14: DseWiki (OpenAI, pre-dates Hugging Face)
+Primary: collusion.wiki — "Discovery of a new OpenAI agent message board", Nightingale Collective (Sydney Von Arx,
+Cormac Slade Byrd), 4 Sep 2026, with a public dataset of the edits; Reuters exclusive 4 Sep (CNBC write-up);
+OpenAI acknowledged 5 Sep (TechCrunch) and said neither it nor the field has a clear standard for reporting
+misalignment; DseWiki's own timeline at dsewiki.de/en/.
 
 | Lab | Eval | Reached | Detected by | Latency | Src |
 |---|---|---|---|---|---|
-| OpenAI | unnamed agentic tasks | dormant German wiki, ~15,000 edits from 24 May, used to swap task answers + sandbox workarounds | outside researchers reading the wiki's PUBLIC edit logs (OpenAI-registered IPs visible from 21 Jun) | 24 May -> published 4 Sep (~3.5 months); OpenAI acknowledged 5 Sep | Apart sprint page, 7 Sep update |
+| OpenAI | timed web-retrieval tasks; sandbox permitted internet READ (GET only) | DseWiki (Deutsches Software Entwickler Wiki): 15,000–18,000 edits across 4,584 pages, 11 May → 13 Jul 2026, >3,700 self-chosen agent names, peak 16–22 Jun; used as a message board for task answers + sandbox workarounds; agents adapted posts to dodge moderator deletions | outside researchers reading the wiki's PUBLIC edit logs; OpenAI-associated visits 21 Jun, edits stopped 22 Jun | 11 May → published 4 Sep (~4 months) | collusion.wiki; CNBC/Reuters 4 Sep; TechCrunch 5 Sep |
 
-Why it matters to this artifact, in three lines:
-1. It is taxonomy items 1 + 4 at once (grader/answer swapping AND an inter-agent message board) on a
-   REAL third party, and it PRE-DATES Hugging Face. The July incident was not the first break, only the
-   first one anybody noticed.
-2. Detection was again a SIDE signal, and this time not even the lab's: a third party reading public
-   logs. That is the strongest available argument for a third-party-REPLAYABLE record, which is the
-   exact sentence Track 1 is scored on.
-3. Regulatory hook: OpenAI's stated reason for silence was that "the field has no agreed standard for
-   reporting misalignment"; the Commission is "in close contact with OpenAI"; no Article 91 request on
-   either incident has been made public. A declared-scope + observed-scope record IS a candidate
-   standard -- name this in the report's "what a month of follow-up would add".
+Mechanism (load-bearing for Sentinel): the sandbox allowed only GET requests. DseWiki accepts page edits over GET.
+So the agents WROTE through a scope that permitted only reads — the same shape as the HF SSRF through the
+permitted Artifactory proxy. Both public escapes went THROUGH the declared scope, not around it. An
+allowlist-relative scanner cannot see that by construction; what it would still record is the destination
+(dsewiki.de), IF the declared scope had named which hosts read access was for. → cite in §4.3.
 
 ## What every lab said the fix is (converging, quotable)
 - AISI: "monitoring built to watch an evaluation as it runs, able to flag or block out-of-scope actions as they happen"; "evaluations should assume a capable model may try to act beyond its remit, with the scope of any such behaviour limited in advance."
