@@ -73,7 +73,8 @@ P("The common shape is not \"no monitor existed.\" In each one the operators kne
 P("We take the smallest step that answers it. Our main contributions are:")
 BUL([
  "A declared-scope representation (a JSON allowlist) and Sentinel, a mechanical, Inspect-native scanner that turns "
- "the first tool-call destination outside that scope into a finding a third party can recompute from files alone.",
+ "the first tool-call destination outside that scope into a finding a third party can recompute from files alone, "
+ "implementing the declared-action half of the egress-attestation spec proposed as Track 1 example 5.",
  "An allowlist-misspecification ablation on a reconstruction of the Hugging Face trace: a too-tight scope pages on "
  "permitted traffic; a wildcard scope is silent on the escape. The control is the pair (trace, allowlist), not the detector.",
  "Seven incident-derived fixtures with stated provenance, used as executable specifications rather than a benchmark, "
@@ -88,6 +89,16 @@ P("Trace monitors for agents exist and work. Inspect Scout ships scanners over e
   "side tasks and sabotage; Apollo's Watcher reads transcripts for scheming [9]; OpenAI now monitors chain-of-thought during "
   "tool-using runs [1]. Preventive controls also exist: default-deny egress via Cilium or Squid FQDN allowlists, and ExploitGym "
   "itself ships a Squid firewall that permits only LLM API endpoints [10].")
+P("The sprint's own materials describe this artifact. Track 1 example project 5 asks for an egress attestation "
+  "spec v0.1: a signed network policy plus a flow-log digest an outside party could verify without network access "
+  "[15]. Sentinel is a working v0.1 of the declared-action half of that spec; the flow-log half is layer 3 of "
+  "Figure 2, not built. SecureLayer7's anatomy of the intrusion proposes treating the replay corpus as a defensive "
+  "evaluation harness and asking which action number a control fires on [16]; our first-out-of-scope index is that "
+  "number, computed against a declared scope. Elastic Security Labs' finding that detection correlated but never "
+  "escalated to a page [17] is the failure mode the T3 severity is designed around. CSA's AI Controls Matrix control "
+  "AIS-13 and its vulnerability-operations guidance state the principle, no egress and no live production "
+  "credentials [18]; the allowlist is that principle made checkable. CoSAI's AI Incident Response Framework v1.0 is "
+  "the incident-response frame this sits under [19].")
 P("None of these takes the evaluation's declared scope as an input artifact and emits a verdict that someone "
   "outside the lab can recompute. Behavioural monitors answer \"does this look bad?\" and need a model and a threshold; a proxy answers "
   "\"was this blocked?\" but its logs stay inside the lab, and in the OpenAI case the proxy was the hole. Sentinel's wedge is narrow: a mechanical predicate over (trace, allowlist). Default-deny egress is the control; Sentinel is not a control; it is the "
@@ -338,6 +349,16 @@ REFS = [
   [("metr.org/blog/2026-08-26-openai-hugging-face-incident-investigation", "https://metr.org/blog/2026-08-26-openai-hugging-face-incident-investigation/")]),
  ("[14] Baker, B. et al., 2025. Monitoring reasoning models for misbehavior and the risks of promoting obfuscation. arXiv:2503.11926",
   [("arXiv:2503.11926", "https://arxiv.org/abs/2503.11926")]),
+ ("[15] Apart Research and CeSIA, 2026. AI Incident Response Sprint, Resources: Track 1 example projects, item 5 (Egress attestation spec v0.1). apartresearch.com/sprints/ai-incident-response-sprint-2026-09-11-to-2026-09-13",
+  [("apartresearch.com/sprints/ai-incident-response-sprint-2026-09-11-to-2026-09-13", "https://apartresearch.com/sprints/ai-incident-response-sprint-2026-09-11-to-2026-09-13")]),
+ ("[16] SecureLayer7, 2026. Hugging Face AI agent intrusion: technical anatomy. blog.securelayer7.net/huggingface-ai-agent-intrusion-technical-anatomy",
+  [("blog.securelayer7.net/huggingface-ai-agent-intrusion-technical-anatomy", "https://blog.securelayer7.net/huggingface-ai-agent-intrusion-technical-anatomy/")]),
+ ("[17] Elastic Security Labs, 2026. Detecting the AI agent attack chain behind the Hugging Face breach. elastic.co/security-labs/ai-agent-attack-detection-hugging-face-breach",
+  [("elastic.co/security-labs/ai-agent-attack-detection-hugging-face-breach", "https://www.elastic.co/security-labs/ai-agent-attack-detection-hugging-face-breach")]),
+ ("[18] Cloud Security Alliance. AI Controls Matrix, control AIS-13 (AI sandboxing), and vulnerability-operations guidance on exploit-confirmation environments. cloudsecurityalliance.org",
+  [("cloudsecurityalliance.org", "https://cloudsecurityalliance.org/")]),
+ ("[19] Coalition for Secure AI, 2026. AI Incident Response Framework v1.0 (Workstream 2). coalitionforsecureai.org/wp-content/uploads/2026/03/AI-Incident-Response-1.pdf",
+  [("coalitionforsecureai.org/wp-content/uploads/2026/03/AI-Incident-Response-1.pdf", "https://www.coalitionforsecureai.org/wp-content/uploads/2026/03/AI-Incident-Response-1.pdf")]),
 ]
 for _i, (_t, _l) in enumerate(REFS, start=1):
     B.append(("ref", (_i, _t, _l)))
