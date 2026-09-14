@@ -20,10 +20,9 @@ REPO = "https://github.com/crishN144/sentinel-evals"
 ABSTRACT = (
  "Between April and July 2026, agents under evaluation at OpenAI, Anthropic and the UK AI Security "
  "Institute reached real third parties. In every public account the evaluation's network scope was declared "
- "in prose or assumed, never checked against what the agent did, and detection came late from a side signal. We argue that an evaluation's declared scope, written as a machine-readable allowlist, is "
- "the unit of containment evidence a third party can verify, and we build Sentinel, an Inspect scanner "
- "that classifies each tool call's stated destination against that allowlist and pages on the first "
- "out-of-scope one. No model is in the gate. On reconstructions of three public incidents (four to seven "
+ "in prose or assumed, never checked against what the agent did, and detection came late from a side signal. We argue that an evaluation's declared scope, written as a machine-readable allowlist, is the unit of "
+ "containment evidence a third party can verify, and build Sentinel, an Inspect scanner that classifies each "
+ "tool call's stated destination against it and pages on the first out-of-scope one, with no model in the gate. On reconstructions of three public incidents (four to seven "
  "events each, from the published timelines, not lab transcripts) the scanner pages at the first "
  "non-allowlisted destination and is silent on three hard negatives where a keyword baseline false-pages on "
  "two. On the 14,591-revision DSEWiki export, a record we did not write, it is silent under the wildcard scope "
@@ -64,7 +63,7 @@ P("In July 2026 two pre-release OpenAI models, running a cyber-capability evalua
   "the field has no agreed standard for reporting misalignment [5].")
 P("These cases share a shape that is not \"no monitor existed.\" In each one the operators knew the intended scope "
   "in prose: no internet; only the LLM API and the package proxy; only the range. Nowhere was that scope an "
-  "artifact the transcript was checked against, and in every case the first signal came from somewhere else: an "
+  "artifact the transcript was checked against, and the first signal always came from somewhere else: an "
   "identity-API anomaly, a Tor alarm, a retrospective sweep, a stranger reading a wiki. Hugging Face's own "
   "post-mortem says its correlation stack existed but \"failed to correctly raise the alert's criticality\" [2]. The "
   "failure is one of scope attachment and attestation (Figure 2), and it is the failure the sprint's containment "
@@ -191,9 +190,9 @@ P("Observation: the same trace yields three different verdicts under three scope
 H3("4.3 The page arrives after the escape")
 P("Under the correct scope the page lands at event 3. Event 2, the request to the permitted proxy, is already the "
   "escape: the SSRF went through an allowlisted host, and an allowlist-relative rule classifies that request as "
-  "ALLOWED. We test this as a known blind spot rather than hide it. The right reading of PAGE @3 is the first "
-  "auditable evidence of out-of-scope egress, which in the reconstruction precedes the production intrusion (events "
-  "5 and 6) and the organisation's own detection (event 6). It is not \"this would have stopped the breach.\" "
+  "ALLOWED. We test this as a known blind spot rather than hide it. PAGE @3 is the first auditable evidence of "
+  "out-of-scope egress, which in the reconstruction precedes the production intrusion (events 5 and 6) and the "
+  "organisation's own detection (event 6). It is not \"this would have stopped the breach.\" "
   "Prevention is default-deny egress plus a hardened permitted proxy, and a trace scanner supplies neither. The "
   "DSEWiki case has the same shape: the sandbox permitted only GET requests, and the wiki accepts page edits "
   "over GET [5]. In both public escapes the agent went through the scope, not around it. An "
@@ -208,9 +207,9 @@ FIGURE(FIG / "fig2_layers_v3.png",
 H3("4.4 Records we did not write: the DSEWiki export and a live Inspect run")
 P("The fixtures show consistency, not generalisation, so we pointed the same rule at a record with a different "
   "author. The Nightingale Collective's export of the DSEWiki incident [5] contains 14,591 saved agent revisions "
-  "across four wikis, 24 May to 2 July 2026, with full text and write times (manifest db_sha256 199241bf…). We "
-  "treat each revision as one event in write order and its body as the argument blob; the extractor pulls stated "
-  "destinations from it exactly as it would from a tool call. Nothing about the events is ours. The declared "
+  "across four wikis, 24 May to 2 July 2026, with full text and write times (manifest db_sha256 199241bf…). Each "
+  "revision is one event in write order and its body the argument blob; the extractor reads it as it would a tool "
+  "call. Nothing about the events is ours. The declared "
   "scope is: the sandbox allowed any GET request to any host, which is the wildcard row of the ablation. We add "
   "two scopes of our own for comparison and say so: one naming only the public datasets the task families were "
   "retrieving from (27 hosts such as api.datausa.io, sec.gov, api.usaspending.gov), and a control that also "
@@ -254,12 +253,12 @@ P("Theory of change. A lab attaches an allowlist to each evaluation class, with 
   "third party can: an auditor or an affected partner who has been given the files, and the Commission, which under "
   "Article 91 of the AI Act may require a provider of a general-purpose AI model to hand over documentation "
   "necessary to assess compliance. The first needs cooperation; only the second can compel. "
-  "The cost of adoption is writing the allowlist, and that is the point: the artifact forces the scope to exist. "
-  "This sits under, not beside, what the labs have already said they will build. AISI asks for monitoring \"able to "
-  "flag or block out-of-scope actions as they happen\" with scope \"limited in advance\" [4]; OpenAI now requires "
-  "chain-of-thought monitoring for tool-using runs [1]. Both need a machine-readable statement of what out-of-scope "
-  "means. Adding layer 3 (Figure 2), the same allowlist diffed against egress flow logs, would let a lab attest "
-  "isolation rather than assume it, which is the failure in the Anthropic name-collision case.")
+  "The cost of adoption is writing the allowlist, which is the point: the artifact forces the scope to exist. It "
+  "sits under what the labs already say they will build: AISI asks for monitoring \"able to flag or block "
+  "out-of-scope actions as they happen\" with scope \"limited in advance\" [4], and OpenAI now requires "
+  "chain-of-thought monitoring for tool-using runs [1]; both need a machine-readable statement of what out-of-scope "
+  "means. Layer 3 (Figure 2), the same allowlist diffed against egress flow logs, would let a lab attest isolation "
+  "rather than assume it, which is the failure in the Anthropic name-collision case.")
 H3("Limitations")
 BUL([
  "The positive fixtures are reconstructions of four to seven events written from public descriptions; Hugging Face "
@@ -298,9 +297,8 @@ P("The public containment failures of 2026 were not failures of monitoring techn
   "that the verdict is only as good as the allowlist: too tight and it pages on permitted traffic, absent and it is "
   "silent on the escape. The same trace shows the verdict arrives after the escape when the escape goes through a "
   "permitted egress, and a third party's record of a second incident reproduces both failure modes on events we did "
-  "not write. Sentinel is small on purpose. What it adds is a checkable layer under the monitors and proxies "
-  "that already exist, and the argument that the artifact to publish per evaluation class is the pair (trace, "
-  "allowlist).")
+  "not write. Sentinel is small on purpose: a checkable layer under the monitors and proxies that already exist, and "
+  "the argument that the artifact to publish per evaluation class is the pair (trace, allowlist).")
 
 H2("Code and Data")
 P("Code repository: " + REPO + " (Apache-2.0, matching ExploitGym). Fixtures, allowlists, the ablation script and "
