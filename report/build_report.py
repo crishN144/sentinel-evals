@@ -6,6 +6,7 @@ from docx.shared import Pt, Inches, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
+from docx.opc.constants import RELATIONSHIP_TYPE as RT
 
 ROOT = Path(__file__).resolve().parents[1]
 TPL = ROOT / "refs/apart_submission_template.docx"
@@ -148,7 +149,7 @@ TABLE([
 ], "Table 1. Specification tests over the seven fixtures. \"Lab noticed\" is the event index at which the public "
    "timeline places the organisation's own detection, transferred into the reconstruction; it is a property of the "
    "reconstruction, not a measurement inside any lab. The keyword baseline has no allowlist.",
-   [1.36, 0.60, 0.94, 1.92, 0.82, 0.86])
+   [1.28, 0.68, 1.00, 1.92, 0.78, 0.84])
 P("Observation: Sentinel pages at the first non-allowlisted stated destination on all three positives and is "
   "silent on all three negatives. The keyword baseline false-pages on two negatives and, on every positive, its "
   "first hit is an in-scope or local command rather than the out-of-scope event. Interpretation: these are tests "
@@ -250,22 +251,39 @@ P("C.N. conceived the project, wrote the scanner, fixtures and tests, ran the ab
 
 H2("References")
 REFS = [
- "[1] OpenAI, 2026. Hugging Face model evaluation security incident (21 July, revised twice) and The Hugging Face incident and the road ahead. openai.com/index/hugging-face-model-evaluation-security-incident; openai.com/index/hugging-face-incident-and-the-road-ahead",
- "[2] Hugging Face, 2026. Agent intrusion: technical timeline. huggingface.co/blog/agent-intrusion-technical-timeline",
- "[3] Anthropic, 2026. Investigating incidents in our cybersecurity evaluations. anthropic.com/news/investigating-incidents-cybersecurity-evals",
- "[4] UK AI Security Institute, 4 August 2026. Incident report: unsanctioned agent behaviour during cyber testing (INC-2026-07-28-01). aisi.gov.uk/blog/incident-report-unsanctioned-agent-behaviour-during-cyber-testing",
- "[5] Von Arx, S., Slade Byrd, C. and the Nightingale Collective, 4 September 2026. Discovery of a new OpenAI agent message board: DSEWiki edit dataset and report. collusion.wiki. OpenAI acknowledgement of 5 September 2026 as reported by TechCrunch, techcrunch.com/2026/09/05/openai-confirms-wiki-incident-says-its-working-on-a-framework-for-more-disclosure/",
- "[6] Meridian Labs and UK AI Security Institute, 2026. Inspect Scout: in-depth analysis of AI agent transcripts. github.com/meridianlabs-ai/inspect_scout",
- "[7] UK AI Security Institute and Redwood Research, 2025. ControlArena. github.com/UKGovernmentBEIS/control-arena",
- "[8] Kutasov, J. et al., 2025. SHADE-Arena: evaluating sabotage and monitoring in LLM agents. arXiv:2506.15740",
- "[9] Apollo Research, 2026. Watcher: security for coding agents (Watcher Live and Watcher Analyze). watcher.apolloresearch.ai",
- "[10] ExploitGym, 2026. ExploitGym: can AI agents turn security vulnerabilities into real attacks? arXiv:2605.11086; repository and docs/firewall.md on GitHub, Apache-2.0.",
- "[11] UK AI Security Institute, July 2026. Cheating behaviour in frontier model evaluations. aisi.gov.uk/blog/cheating-behaviour-in-frontier-model-evaluations",
- "[12] Nagarkar, C., 2026. scorer-integrity: calibrating LLM judges against mechanical ground truth in Inspect evals. github.com/crishN144/scorer-integrity",
- "[13] METR and Redwood Research, 26 August 2026. Brief independent investigation of agents' behavior, reasoning and collaboration in the OpenAI / Hugging Face hacking incident. metr.org/blog/2026-08-26-openai-hugging-face-incident-investigation",
- "[14] Baker, B. et al., 2025. Monitoring reasoning models for misbehavior and the risks of promoting obfuscation. arXiv:2503.11926",
+ ("[1] OpenAI, 2026. Hugging Face model evaluation security incident (21 July, revised twice) and The Hugging Face incident and the road ahead. openai.com/index/hugging-face-model-evaluation-security-incident; openai.com/index/hugging-face-incident-and-the-road-ahead",
+  [("openai.com/index/hugging-face-model-evaluation-security-incident", "https://openai.com/index/hugging-face-model-evaluation-security-incident/"),
+   ("openai.com/index/hugging-face-incident-and-the-road-ahead", "https://openai.com/index/hugging-face-incident-and-the-road-ahead")]),
+ ("[2] Hugging Face, 2026. Agent intrusion: technical timeline. huggingface.co/blog/agent-intrusion-technical-timeline",
+  [("huggingface.co/blog/agent-intrusion-technical-timeline", "https://huggingface.co/blog/agent-intrusion-technical-timeline")]),
+ ("[3] Anthropic, 2026. Investigating incidents in our cybersecurity evaluations. anthropic.com/news/investigating-incidents-cybersecurity-evals",
+  [("anthropic.com/news/investigating-incidents-cybersecurity-evals", "https://www.anthropic.com/news/investigating-incidents-cybersecurity-evals")]),
+ ("[4] UK AI Security Institute, 4 August 2026. Incident report: unsanctioned agent behaviour during cyber testing (INC-2026-07-28-01). aisi.gov.uk/blog/incident-report-unsanctioned-agent-behaviour-during-cyber-testing",
+  [("aisi.gov.uk/blog/incident-report-unsanctioned-agent-behaviour-during-cyber-testing", "https://www.aisi.gov.uk/blog/incident-report-unsanctioned-agent-behaviour-during-cyber-testing")]),
+ ("[5] Von Arx, S., Slade Byrd, C. and the Nightingale Collective, 4 September 2026. Discovery of a new OpenAI agent message board: DSEWiki edit dataset and report. collusion.wiki. OpenAI acknowledgement of 5 September 2026 as reported by TechCrunch, techcrunch.com/2026/09/05/openai-confirms-wiki-incident-says-its-working-on-a-framework-for-more-disclosure/",
+  [("collusion.wiki", "https://collusion.wiki/"),
+   ("techcrunch.com/2026/09/05/openai-confirms-wiki-incident-says-its-working-on-a-framework-for-more-disclosure/", "https://techcrunch.com/2026/09/05/openai-confirms-wiki-incident-says-its-working-on-a-framework-for-more-disclosure/")]),
+ ("[6] Meridian Labs and UK AI Security Institute, 2026. Inspect Scout: in-depth analysis of AI agent transcripts. github.com/meridianlabs-ai/inspect_scout",
+  [("github.com/meridianlabs-ai/inspect_scout", "https://github.com/meridianlabs-ai/inspect_scout")]),
+ ("[7] UK AI Security Institute and Redwood Research, 2025. ControlArena. github.com/UKGovernmentBEIS/control-arena",
+  [("github.com/UKGovernmentBEIS/control-arena", "https://github.com/UKGovernmentBEIS/control-arena")]),
+ ("[8] Kutasov, J. et al., 2025. SHADE-Arena: evaluating sabotage and monitoring in LLM agents. arXiv:2506.15740",
+  [("arXiv:2506.15740", "https://arxiv.org/abs/2506.15740")]),
+ ("[9] Apollo Research, 2026. Watcher: security for coding agents (Watcher Live and Watcher Analyze). watcher.apolloresearch.ai",
+  [("watcher.apolloresearch.ai", "https://watcher.apolloresearch.ai/")]),
+ ("[10] ExploitGym, 2026. ExploitGym: can AI agents turn security vulnerabilities into real attacks? arXiv:2605.11086; repository and docs/firewall.md on GitHub, Apache-2.0.",
+  [("arXiv:2605.11086", "https://arxiv.org/abs/2605.11086")]),
+ ("[11] UK AI Security Institute, July 2026. Cheating behaviour in frontier model evaluations. aisi.gov.uk/blog/cheating-behaviour-in-frontier-model-evaluations",
+  [("aisi.gov.uk/blog/cheating-behaviour-in-frontier-model-evaluations", "https://www.aisi.gov.uk/blog/cheating-behaviour-in-frontier-model-evaluations")]),
+ ("[12] Nagarkar, C., 2026. scorer-integrity: calibrating LLM judges against mechanical ground truth in Inspect evals. github.com/crishN144/scorer-integrity",
+  [("github.com/crishN144/scorer-integrity", "https://github.com/crishN144/scorer-integrity")]),
+ ("[13] METR and Redwood Research, 26 August 2026. Brief independent investigation of agents' behavior, reasoning and collaboration in the OpenAI / Hugging Face hacking incident. metr.org/blog/2026-08-26-openai-hugging-face-incident-investigation",
+  [("metr.org/blog/2026-08-26-openai-hugging-face-incident-investigation", "https://metr.org/blog/2026-08-26-openai-hugging-face-incident-investigation/")]),
+ ("[14] Baker, B. et al., 2025. Monitoring reasoning models for misbehavior and the risks of promoting obfuscation. arXiv:2503.11926",
+  [("arXiv:2503.11926", "https://arxiv.org/abs/2503.11926")]),
 ]
-for r in REFS: P(r)
+for _i, (_t, _l) in enumerate(REFS, start=1):
+    B.append(("ref", (_i, _t, _l)))
 
 H2("Appendix A. Limitations and Dual-Use Considerations")
 P("Limitations are listed in Section 5 and are not repeated. Dual use is the concern specific to publishing a "
@@ -300,6 +318,82 @@ TABLE([
    "multi-agent corpora and are out of scope for this artifact.", [2.6, 2.4, 1.5])
 
 # ---------- rendering ----------
+LINK = "#2e5c8a"          # links: coloured, not underlined (paper convention)
+CITE = re.compile(r"\[(\d+(?:,\s*\d+)*)\]")
+URL_IN_TEXT = re.compile(r"https?://[^\s,)]+")
+_BK = [0]
+
+
+def _style(run, size=None, italic=None, bold=None, link=False):
+    if size: run.font.size = size
+    if italic is not None: run.italic = italic
+    if bold is not None: run.bold = bold
+    run.font.name = "Old Standard TT"
+    if link: run.font.color.rgb = RGBColor(0x2E, 0x5C, 0x8A)
+    return run
+
+
+def _linked_run(paragraph, text, *, anchor=None, url=None, size=None):
+    """One run wrapped in <w:hyperlink>: internal (anchor) or external (url)."""
+    h = OxmlElement("w:hyperlink")
+    if anchor is not None:
+        h.set(qn("w:anchor"), anchor)
+    else:
+        h.set(qn("r:id"), paragraph.part.relate_to(url, RT.HYPERLINK, is_external=True))
+    run = paragraph.add_run(text)
+    _style(run, size=size, link=True)
+    run._r.getparent().remove(run._r)
+    h.append(run._r)
+    paragraph._p.append(h)
+
+
+def bookmark(paragraph, name):
+    _BK[0] += 1
+    st = OxmlElement("w:bookmarkStart"); st.set(qn("w:id"), str(_BK[0])); st.set(qn("w:name"), name)
+    en = OxmlElement("w:bookmarkEnd"); en.set(qn("w:id"), str(_BK[0]))
+    paragraph._p.insert(0, st); paragraph._p.append(en)
+
+
+def write_text(paragraph, text, *, size=None, italic=None, bold=None):
+    """Emit text, linking every [n] citation to its reference and every bare URL out."""
+    pos = 0
+    for m in URL_IN_TEXT.finditer(text):
+        if m.start() > pos:
+            write_text(paragraph, text[pos:m.start()], size=size, italic=italic, bold=bold)
+        _linked_run(paragraph, m.group(0), url=m.group(0), size=size)
+        pos = m.end()
+    if pos:
+        if pos < len(text):
+            write_text(paragraph, text[pos:], size=size, italic=italic, bold=bold)
+        return
+    for m in CITE.finditer(text):
+        if m.start() > pos:
+            _style(paragraph.add_run(text[pos:m.start()]), size, italic, bold)
+        _style(paragraph.add_run("["), size, italic, bold)
+        nums = [x.strip() for x in m.group(1).split(",")]
+        for i, num in enumerate(nums):
+            if i:
+                _style(paragraph.add_run(", "), size, italic, bold)
+            _linked_run(paragraph, num, anchor="ref" + num, size=size)
+        _style(paragraph.add_run("]"), size, italic, bold)
+        pos = m.end()
+    if pos < len(text):
+        _style(paragraph.add_run(text[pos:]), size, italic, bold)
+
+
+def write_reference(paragraph, text, links, size):
+    """Emit a reference line, hyperlinking each declared URL span."""
+    spans = sorted(((text.index(d), d, u) for d, u in links if d in text))
+    pos = 0
+    for i, d, u in spans:
+        if i > pos:
+            _style(paragraph.add_run(text[pos:i]), size)
+        _linked_run(paragraph, d, url=u, size=size)
+        pos = i + len(d)
+    if pos < len(text):
+        _style(paragraph.add_run(text[pos:]), size)
+
+
 def set_cell_text(cell, text, bold=None, size=None):
     p = cell.paragraphs[0]
     for r in p.runs[1:]: r._r.getparent().remove(r._r)
@@ -369,16 +463,28 @@ def build():
         if after and el.tag != qn("w:sectPr"): body.remove(el)
     # 3. append content
     for kind, payload in B:
-        if kind == "h2": d.add_paragraph(payload, style="Heading 2").paragraph_format.keep_with_next = True
+        if kind == "h2":
+            _h = d.add_paragraph(payload, style="Heading 2")
+            _h.paragraph_format.keep_with_next = True
+            if payload.startswith("Appendix A"):
+                _h.paragraph_format.page_break_before = True
         elif kind == "h3": d.add_paragraph(payload, style="Heading 3").paragraph_format.keep_with_next = True
         elif kind == "p":
-            p = d.add_paragraph(payload, style="normal"); p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+            p = d.add_paragraph(style="normal"); write_text(p, payload)
+            p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
             p.paragraph_format.space_after = Pt(5)
+        elif kind == "ref":
+            n, text, links = payload
+            p = d.add_paragraph(style="normal"); write_reference(p, text, links, Pt(10))
+            p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+            p.paragraph_format.space_after = Pt(4); p.paragraph_format.left_indent = Inches(0.28)
+            p.paragraph_format.first_line_indent = Inches(-0.28)
+            bookmark(p, "ref%d" % n)
         elif kind == "bul":
             for it in payload:
                 p = d.add_paragraph(style="normal"); p.paragraph_format.left_indent = Inches(0.3)
                 p.paragraph_format.first_line_indent = Inches(-0.2); p.paragraph_format.space_after = Pt(4)
-                p.add_run("•  " + it); p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+                write_text(p, "•  " + it); p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
         elif kind == "fig":
             path, cap, w = payload
             p = d.add_paragraph(style="normal"); p.alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -397,10 +503,10 @@ def build():
             for i, row in enumerate(rows):
                 for j, val in enumerate(row):
                     cell = t.cell(i, j); cell.text = ""
-                    r = cell.paragraphs[0].add_run(val); r.font.size = Pt(8.1); r.bold = (i == 0)
+                    write_text(cell.paragraphs[0], val, size=Pt(8.1), bold=(i == 0))
                     if widths: cell.width = Inches(widths[j])
             c = d.add_paragraph(style="normal"); r = c.add_run(cap); r.font.size = Pt(9.5); r.italic = True
-            c.paragraph_format.space_after = Pt(8)
+            c.paragraph_format.space_before = Pt(7); c.paragraph_format.space_after = Pt(10)
     # body font size: template body runs are 12pt via style defaults; set explicit 11pt for the 4-page budget
     for t in d.tables[1:]:
         for row in t.rows:
@@ -412,7 +518,7 @@ def build():
             for r in p.runs:
                 r.font.name = "Old Standard TT"
                 if r.font.size is None: r.font.size = Pt(10.5)
-            p.paragraph_format.line_spacing = 1.0
+            p.paragraph_format.line_spacing = 1.14
     OUT.parent.mkdir(exist_ok=True)
     d.save(OUT); print("wrote", OUT)
 
