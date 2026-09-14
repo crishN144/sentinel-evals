@@ -502,6 +502,7 @@ def build():
             p.paragraph_format.space_before = Pt(6)
             p.add_run().add_picture(str(path), width=Inches(w)); p.paragraph_format.keep_with_next = True
             c = d.add_paragraph(style="normal"); r = c.add_run(cap); r.font.size = Pt(9.5); r.italic = True
+            c.paragraph_format.line_spacing = 1.30
             c.paragraph_format.space_before = Pt(6); c.paragraph_format.space_after = Pt(10)
         elif kind == "tbl":
             rows, cap, widths = payload
@@ -518,6 +519,7 @@ def build():
                     write_text(cell.paragraphs[0], val, size=Pt(8.1), bold=(i == 0))
                     if widths: cell.width = Inches(widths[j])
             c = d.add_paragraph(style="normal"); r = c.add_run(cap); r.font.size = Pt(9.5); r.italic = True
+            c.paragraph_format.line_spacing = 1.30
             c.paragraph_format.space_before = Pt(7); c.paragraph_format.space_after = Pt(10)
     # body font size: template body runs are 12pt via style defaults; set explicit 11pt for the 4-page budget
     for t in d.tables[1:]:
@@ -533,7 +535,8 @@ def build():
             for r in p.runs:
                 r.font.name = "Old Standard TT"
                 if r.font.size is None: r.font.size = Pt(10.5)
-            p.paragraph_format.line_spacing = 1.14
+            if p.paragraph_format.line_spacing is None:
+                p.paragraph_format.line_spacing = 1.08
     OUT.parent.mkdir(exist_ok=True)
     d.save(OUT); print("wrote", OUT)
 
