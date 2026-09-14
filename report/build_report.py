@@ -10,7 +10,7 @@ from docx.opc.constants import RELATIONSHIP_TYPE as RT
 
 ROOT = Path(__file__).resolve().parents[1]
 TPL = ROOT / "refs/apart_submission_template.docx"
-OUT = ROOT / "report/build/Sentinel_Apart_AIIR_Sprint_2026.docx"
+OUT = ROOT / "report/build/Sentinel_Nagarkar_AIIR_Sprint_2026.docx"
 FIG = ROOT / "report/figures"
 
 TITLE = "Sentinel: The Declared Scope Is the Unit of Containment Evidence in Agentic Evaluations"
@@ -130,10 +130,8 @@ P("T3, a stated destination classified OUT, is the only PAGE. T1 (reading grader
   "(mount tables, cgroups, proxy enumeration, metadata addresses) are WARN and never page. The reason is base rates: "
   "in a capture-the-flag task, flag-seeking is the task, and reconnaissance of one's own box is routine. AISI's "
   "cheating study lists \"probing evaluation software for solution leaks\" as a cheating mode [11]; we surface it, we "
-  "do not alarm on it. The precedent for gating on a predicate the environment can settle itself, rather than on a "
-  "second model, is scorer-integrity [12], which measured an LLM scheming-judge against an operative-action oracle "
-  "over 599 Inspect gradings and noted that most environments offer no such predicate. Containment evaluations do: "
-  "the allowlist.")
+  "do not alarm on it. Gating on a predicate the environment can settle itself, rather than on a second model, is the "
+  "same choice scorer-integrity [12] made; containment evaluations offer that predicate in the allowlist.")
 H3("3.4 Inspect integration and replay")
 P("scanner.py wraps the same rule as an inspect_scout scanner over ChatMessageAssistant.tool_calls and returns a "
   "Result whose answer is the host and whose metadata carries the first out-of-scope message index. JSON replay over the trace schema "
