@@ -551,7 +551,7 @@ def build():
         if kind == "h2":
             _h = d.add_paragraph(payload, style="Heading 2")
             _h.paragraph_format.keep_with_next = True
-            if payload.startswith("Appendix A"):
+            if payload.startswith(("Appendix A", "Appendix C")):
                 _h.paragraph_format.page_break_before = True
         elif kind == "h3": d.add_paragraph(payload, style="Heading 3").paragraph_format.keep_with_next = True
         elif kind == "p":
