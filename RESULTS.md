@@ -23,6 +23,11 @@ events 5–6, and before the lab's own detection at event 6). It does **not** me
 been stopped. Prevention is default-deny egress plus hardening the permitted proxy; a trace scanner
 provides neither.
 
+**A record we did not write.** [REAL_DATA.md](REAL_DATA.md): the same rule over the DSEWiki export
+(14,591 agent revisions, collusion.wiki). Silent under the wildcard scope the sandbox actually had; first page at
+event 5 (24 May 11:53 UTC, `wikiservice.at`) under any scope naming the task's data sources — 27 days before the
+first OpenAI-associated visit. Both non-wildcard scopes there are ours; the events are not.
+
 **Allowlist misspecification.** See [ABLATION.md](ABLATION.md): the same trace under a too-tight scope
 false-pages on the permitted proxy, and under a wildcard scope is silent on the escape. The artifact is
 the pair (trace, allowlist); a scanner with no declared scope is not a control.

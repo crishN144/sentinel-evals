@@ -41,7 +41,7 @@ def H2(t): B.append(("h2", t))
 def H3(t): B.append(("h3", t))
 def P(t): B.append(("p", t))
 def BUL(items): B.append(("bul", items))
-def FIGURE(path, caption, width=5.9): B.append(("fig", (path, caption, width)))
+def FIGURE(path, caption, width=5.4): B.append(("fig", (path, caption, width)))
 def TABLE(rows, caption, widths=None): B.append(("tbl", (rows, caption, widths)))
 
 H2("1. Introduction")
@@ -96,8 +96,7 @@ P("None of these takes the evaluation's declared scope as an input artifact and 
   "objection is met rather than dodged: default-deny egress is the control; Sentinel is not a control; it is the "
   "smallest artifact that turns the control's scope into a published, recomputable claim. \"Why not just publish "
   "the proxy logs?\" is the right question, and it is layer 3 of Figure 2: it needs the same allowlist to be "
-  "meaningful, and today no such allowlist is published. One would use Sentinel alongside the monitors above, "
-  "never instead of a default-deny proxy. What it provides that we did not have is the "
+  "meaningful, and today no such allowlist is published. What it provides that we did not have is the "
   "index of the first out-of-scope stated destination as a reproducible number attached to a declared scope.")
 
 H2("3. Methods")
@@ -177,14 +176,16 @@ FIGURE(FIG / "fig1_ablation.png",
   "Figure 1. One reconstruction of the Hugging Face trace under three declared scopes. Only the allowlist changes. "
   "Too tight (omits the permitted Artifactory proxy) pages at event 2 on legitimate traffic. Correct pages at event "
   "3, the first destination after the proxy. Wildcard pages nowhere. The dotted line at event 2 is the SSRF through "
-  "the permitted proxy, which no allowlist can see; the shaded region is post-escape activity inside Hugging Face.")
+  "the permitted proxy, which no allowlist can see; the shaded region is post-escape activity inside Hugging Face.", 5.0)
 P("Observation: the same trace yields three different verdicts under three scopes (Figure 1). Interpretation: "
   "both directions of misspecification fail, and they fail differently. The too-tight scope produces a page on "
   "permitted egress, the kind of alert that gets a monitor switched off within a day. The wildcard scope, which is "
   "what \"we allow internet\" means when nobody writes the list, is silent on a real containment failure. A scanner "
   "with no declared scope is not a control. This is the result we would defend in front of a detection engineer: "
   "the artifact worth publishing per evaluation class is the pair (trace, allowlist), and verifiability is a "
-  "property of the pair.")
+  "property of the pair. Every number in this section is deterministic and pinned by tests, so there is no interval "
+  "to report; the one robustness question that matters is sensitivity to the scope, and this table is that question "
+  "asked directly.")
 H3("4.3 The page arrives after the escape")
 P("Under the correct scope the page lands at event 3. Event 2, the request to the permitted proxy, is already the "
   "escape: the SSRF went through an allowlisted host, and an allowlist-relative rule classifies that request as "
@@ -201,7 +202,7 @@ FIGURE(FIG / "fig2_layers_v3.png",
   "Layers 1 and 2 are what this paper builds: the declared scope and the agent's stated destination, checked "
   "against it. Layer 3, observed flows diffed against the same allowlist, is not built and is the month of "
   "follow-up. Layer 4 is the Track 1 criterion. Prevention is a separate row: it stops escapes and yields no "
-  "third-party evidence.", 5.9)
+  "third-party evidence.", 5.4)
 H3("4.4 A record we did not write: the DSEWiki export")
 P("The fixtures show consistency, not generalisation, so we pointed the same rule at a record with a different "
   "author. The Nightingale Collective's export of the DSEWiki incident [5] contains 14,591 saved agent revisions "
@@ -236,13 +237,6 @@ P("Observation: under the scope the sandbox actually had, the scanner is silent 
   "the T2 boundary heuristic fired 1,147 times on this record because the word \"proxy\" appears in the "
   "hostnames of the workaround infrastructure; that is a lexical accident, not a validated signal, and we report "
   "it as one.")
-H3("4.5 Robustness")
-P("Every number above is deterministic and pinned by tests; there is no sampling and so no interval to report. "
-  "The relevant robustness question is sensitivity to small changes in setup, and the ablation is that question "
-  "asked of the one input that matters. The answer is that the method is fragile to scope specification in both "
-  "directions. We regard that fragility as the finding, not a weakness of the experiment: it is why the scope must "
-  "be a published artifact.")
-
 H2("5. Discussion and Limitations")
 P("Theory of change. A lab attaches an allowlist to each evaluation class, with notes on why each entry is "
   "permitted. Sentinel runs offline over the campaign's Inspect logs in minutes, with no API key. The lab publishes "
