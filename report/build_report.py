@@ -216,7 +216,7 @@ TABLE([
  ["wildcard (the actual scope: any GET)", "0 of 14,591", "—", "—", "silent"],
  ["data sources only (ours)", "16,504", "event 5, 24 May 11:53 UTC", "wikiservice.at (wiki channel)", "27 days"],
  ["data sources + wiki hosts (control)", "11,946", "event 36, 26 May 09:43 UTC", "example.com; then markdown.new, piv.max.gov", "25 days"],
-], "Table 3. Sentinel over the DSEWiki export under three declared scopes. The events are the researchers' record; "
+], "Table 2. Sentinel over the DSEWiki export under three declared scopes. The events are the researchers' record; "
    "the two non-wildcard scopes are our reconstruction from the task families visible in it. \"Before OpenAI's first "
    "visit\" uses the date collusion.wiki gives for the first OpenAI-associated addresses on the pages.",
    [1.95, 0.85, 1.35, 1.55, 0.80])
@@ -364,7 +364,7 @@ TABLE([
  ["7 Persistence past a safe exit", "OpenAI (198/898 unsolved tasks)", "not covered (policy)"],
  ["8 Transcript / monitor tampering", "AISI, METR [13]", "not covered; defeats T3"],
  ["9 Goal adoption from peers", "OpenAI", "not covered"],
-], "Table 2. The nine behaviours distilled from the four public accounts, and which ones an allowlist-relative "
+], "Table 3. The nine behaviours distilled from the four public accounts, and which ones an allowlist-relative "
    "scanner can see. Only item 3 is a mechanical page; items 1 and 2 warn; the rest need environment telemetry or "
    "multi-agent corpora and are out of scope for this artifact.", [2.6, 2.4, 1.5])
 
