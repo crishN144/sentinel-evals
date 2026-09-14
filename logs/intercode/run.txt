@@ -1,0 +1,34 @@
+Monitor from another shell: inspect ctl task list   (inspect ctl --help)
+time="2026-09-14T01:38:24+01:00" level=warning msg="buildx Docker CLI plugin not found: falling back to the classic builder. BuildKit-only build features (multi-arch, secrets, ssh, additional contexts, ...) will not be available"
+ Image inspect-startup-isjcb9s-default Building 
+ Image inspect-startup-isjcb9s-default Building 
+Sending build context to Docker daemon  15.05kB
+Step 1/7 : FROM ubuntu:24.04
+ ---> 224a1869083a
+Step 2/7 : RUN apt-get update &&     apt-get install -y bash python3 python3-pip psmisc bsdmainutils cron imagemagick tcpdump dnsutils git wget gcc sleuthkit netcat-traditional unzip curl gdb poppler-utils tmux jq &&     apt-get clean &&     rm -rf /var/lib/apt/lists/*
+ ---> Running in 5f9dbd90d590
+Get:1 http://ports.ubuntu.com/ubuntu-ports noble InRelease [256 kB]
+Get:2 http://ports.ubuntu.com/ubuntu-ports noble-updates InRelease [126 kB]
+Get:3 http://ports.ubuntu.com/ubuntu-ports noble-backports InRelease [126 kB]
+Get:4 http://ports.ubuntu.com/ubuntu-ports noble-security InRelease [126 kB]
+Get:5 http://ports.ubuntu.com/ubuntu-ports noble/main arm64 Packages [1776 kB]
+Get:6 http://ports.ubuntu.com/ubuntu-ports noble/multiverse arm64 Packages [274 kB]
+Get:7 http://ports.ubuntu.com/ubuntu-ports noble/universe arm64 Packages [19.0 MB]
+Get:8 http://ports.ubuntu.com/ubuntu-ports noble/restricted arm64 Packages [113 kB]
+Get:9 http://ports.ubuntu.com/ubuntu-ports noble-updates/universe arm64 Packages [2195 kB]
+Get:10 http://ports.ubuntu.com/ubuntu-ports noble-updates/multiverse arm64 Packages [92.2 kB]
+Get:11 http://ports.ubuntu.com/ubuntu-ports noble-updates/main arm64 Packages [1630 kB]
+Get:12 http://ports.ubuntu.com/ubuntu-ports noble-updates/restricted arm64 Packages [2841 kB]
+Ign:13 http://ports.ubuntu.com/ubuntu-ports noble-backports/multiverse arm64 Packages
+Get:14 http://ports.ubuntu.com/ubuntu-ports noble-backports/universe arm64 Packages [36.3 kB]
+Get:15 http://ports.ubuntu.com/ubuntu-ports noble-backports/main arm64 Packages [48.9 kB]
+Get:16 http://ports.ubuntu.com/ubuntu-ports noble-security/main arm64 Packages [1312 kB]
+Get:17 http://ports.ubuntu.com/ubuntu-ports noble-security/universe arm64 Packages [1617 kB]
+Get:18 http://ports.ubuntu.com/ubuntu-ports noble-security/multiverse arm64 Packages [87.7 kB]
+Get:19 http://ports.ubuntu.com/ubuntu-ports noble-security/restricted arm64 Packages [2707 kB]
+Get:13 http://ports.ubuntu.com/ubuntu-ports noble-backports/multiverse arm64 Packages [671 B]
+Fetched 34.4 MB in 5s (6726 kB/s)
+Reading package lists...
+Reading package lists...
+Building dependency tree...
+Reading state information...

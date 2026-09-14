@@ -128,3 +128,22 @@ def test_ablation_correct_scope_pages_after_the_proxy():
     r = scan_trace(t, al)
     assert r["first_page"]["event_index"] == 3
     assert r["first_page"]["event_index"] > 2, "page != prevent: escape already happened via the proxy"
+
+
+# --- A record we did not write: the DSEWiki export (data is downloaded, not committed) ---
+def test_dsewiki_export_wildcard_silent_named_scope_pages_day_one():
+    """Pins the numbers in report §4.4. Skips unless data_external/collusion_wiki/ has been fetched
+    (see experiments/collusion_wiki_scan.py for the download URL and manifest hash)."""
+    import gzip, pytest
+    f = ROOT / "data_external/collusion_wiki/revisions.jsonl.gz"
+    if not f.exists():
+        pytest.skip("DSEWiki export not downloaded")
+    revs = sorted((json.loads(l)["time"], json.loads(l)["body"]) for l in gzip.open(f, "rt"))
+    assert len(revs) == 14591
+    trace = {"trace_id": "dsewiki", "events": [{"i": i, "arguments": {"body": b}} for i, (_, b) in enumerate(revs)]}
+    wild = Allowlist("any-get", internet_expected=True, allowed_hosts={"*"})
+    assert scan_trace(trace, wild)["first_page"] is None, "wildcard scope must be silent"
+    data = Allowlist("data", internet_expected=True, allowed_hosts={".datausa.io", ".sec.gov", ".investor.gov", ".usaspending.gov"})
+    fp = scan_trace(trace, data)["first_page"]
+    assert fp["event_index"] == 5 and fp["destination"] == "wikiservice.at"
+    assert revs[5][0].startswith("2026-05-24")

@@ -32,6 +32,24 @@ non-allowlisted destination (3/3), stays silent on three hard negatives (3/3), a
 baseline false-pages on 2 of those 3 while mislocating the first true out-of-scope event on all
 three positives.
 
+## A record we did not write
+
+`experiments/collusion_wiki_scan.py` runs the same rule over the Nightingale Collective's export of the
+DSEWiki incident (14,591 saved agent revisions, 24 May–2 Jul 2026). Download the export first — it is
+not committed here:
+
+```bash
+mkdir -p data_external/collusion_wiki && cd data_external/collusion_wiki
+for f in manifest.json.gz revisions.jsonl.gz links.jsonl.gz events.jsonl.gz labels.jsonl.gz pages.jsonl.gz; do
+  curl -sLO "https://collusion.wiki/explorer/download/$f"; done
+cd ../.. && python experiments/collusion_wiki_scan.py     # writes REAL_DATA.md
+```
+
+Manifest `db_sha256` at the time of our run: `199241bf9e0b38b58764cf1545680de8fec8896db034050bde145e3b6f6ce0bb`.
+Result: silent under the wildcard scope the sandbox actually had; first page at event 5 (24 May, 11:53 UTC,
+`wikiservice.at`) under any scope naming the task's data sources. See [REAL_DATA.md](REAL_DATA.md).
+`tests/test_sentinel.py::test_dsewiki_export_*` pins those numbers and skips when the data is absent.
+
 ## Honest limits
 
 - **Fixtures are reconstructions** from public write-ups, not lab transcripts. No lab has released

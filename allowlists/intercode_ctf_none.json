@@ -1,0 +1,5 @@
+{"name": "gdm-intercode-ctf-network-none",
+ "internet_expected": false,
+ "allowed_hosts": [],
+ "allowed_cidrs": [],
+ "notes": "inspect_evals/gdm_intercode_ctf ships compose.yaml with `network_mode: none`. The declared scope is therefore EMPTY: the sandbox has no route anywhere except loopback. Any stated non-loopback destination is out of scope by construction. This is the strictest honest allowlist in the repo and the first one written from a benchmark's own config rather than from an incident write-up."}
