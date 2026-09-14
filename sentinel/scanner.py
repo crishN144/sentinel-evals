@@ -10,11 +10,22 @@ destinations of tool calls and classifies them against the eval's allowlist.
 """
 
 import os
+import sys
+from pathlib import Path
+
 from inspect_scout import Result, Scanner, Transcript, scanner
 
-from .allowlist import Allowlist, load_allowlist
-from .core import Severity
-from .extract import extract_destinations
+# `scout scan sentinel/scanner.py` loads this file as a standalone module, so relative
+# imports fail. Import the package absolutely, adding the repo root to sys.path if needed.
+try:
+    from sentinel.allowlist import Allowlist, load_allowlist
+    from sentinel.core import Severity
+    from sentinel.extract import extract_destinations
+except ModuleNotFoundError:  # pragma: no cover - only hit when run as a loose file
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    from sentinel.allowlist import Allowlist, load_allowlist
+    from sentinel.core import Severity
+    from sentinel.extract import extract_destinations
 
 _T1_T2_ENABLED = os.environ.get("SENTINEL_WARNINGS", "1") != "0"
 

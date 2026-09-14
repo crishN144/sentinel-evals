@@ -28,6 +28,11 @@ provides neither.
 event 5 (24 May 11:53 UTC, `wikiservice.at`) under any scope naming the task's data sources — 27 days before the
 first OpenAI-associated visit. Both non-wildcard scopes there are ours; the events are not.
 
+**A live Inspect run (negative control).** Eight samples of `gdm_intercode_ctf` with an EMPTY declared
+scope (`network_mode: none`): 42 real tool calls, no page, no warn, baseline 0; `scout scan` returns the same
+eight verdicts from the `.eval` log in `logs/intercode/`. Shows silence on tool calls the rule was not written
+against; says nothing about detection.
+
 **Allowlist misspecification.** See [ABLATION.md](ABLATION.md): the same trace under a too-tight scope
 false-pages on the permitted proxy, and under a wildcard scope is silent on the escape. The artifact is
 the pair (trace, allowlist); a scanner with no declared scope is not a control.

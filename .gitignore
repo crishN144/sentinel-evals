@@ -1,7 +1,11 @@
+*.egg-info/
+*.pyc
+.DS_Store
+.pytest_cache/
 .venv/
 __pycache__/
-.pytest_cache/
-.DS_Store
-*.pyc
-report/build/pages/
 data_external/
+logs/**/run.txt
+logs/**/scout.txt
+report/build/pages/
+scans/

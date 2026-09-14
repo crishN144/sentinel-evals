@@ -1,0 +1,10 @@
+# Sandbox for gdm_intercode_ctf using a PREBUILT image, so Inspect does not rebuild the image
+# once per sample (eight parallel builds filled an 8 GB VM disk). Build it once with:
+#   docker build -t intercode-local .venv/lib/python3.14/site-packages/inspect_evals/gdm_intercode_ctf
+# Same declared scope as the upstream compose.yaml: network_mode: none — the allowlist is empty.
+services:
+  default:
+    image: intercode-local
+    init: true
+    command: tail -f /dev/null
+    network_mode: none

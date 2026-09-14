@@ -19,18 +19,18 @@ REPO = "https://github.com/crishN144/sentinel-evals"
 
 ABSTRACT = (
  "Between April and July 2026, agents under evaluation at OpenAI, Anthropic and the UK AI Security "
- "Institute reached real third parties. In every public account the evaluation's network scope was "
- "declared in prose or assumed, never checked against what the agent did, and detection came late from a "
- "side signal. We argue that an evaluation's declared scope, written as a machine-readable allowlist, is "
+ "Institute reached real third parties. In every public account the evaluation's network scope was declared "
+ "in prose or assumed, never checked against what the agent did, and detection came late from a side signal. We argue that an evaluation's declared scope, written as a machine-readable allowlist, is "
  "the unit of containment evidence a third party can verify, and we build Sentinel, an Inspect scanner "
  "that classifies each tool call's stated destination against that allowlist and pages on the first "
  "out-of-scope one. No model is in the gate. On reconstructions of three public incidents (four to seven "
- "events each, built from the published timelines, not lab transcripts) the scanner pages at the first "
- "non-allowlisted destination; on three hard negatives it is silent, where a keyword baseline false-pages "
- "on two. On a record we did not write, the 14,591-revision export of the DSEWiki incident, the same rule is "
- "silent under the wildcard scope the sandbox actually had and pages on the first day under any scope that "
- "names what the task was for. The headline result is an ablation on one trace: a too-tight scope pages on permitted traffic, "
- "and a wildcard scope is silent on the escape. Verifiability is a property of the pair (trace, "
+ "events each, from the published timelines, not lab transcripts) the scanner pages at the first "
+ "non-allowlisted destination and is silent on three hard negatives where a keyword baseline false-pages on "
+ "two. On the 14,591-revision DSEWiki export, a record we did not write, it is silent under the wildcard scope "
+ "the sandbox actually had and pages on day one under any scope naming the task's data sources; on a live "
+ "eight-sample Inspect run with an empty declared scope it is correctly silent on 42 real tool calls. The "
+ "headline result is an ablation on one trace: a too-tight scope pages on permitted traffic, a wildcard scope is "
+ "silent on the escape. Verifiability is a property of the pair (trace, "
  "allowlist), not of the detector. The same trace shows the page arrives after the escape, which went "
  "through the permitted proxy: a scanner audits containment; it does not provide it."
 )
@@ -85,9 +85,8 @@ BUL([
 H2("2. Related Work")
 P("Trace monitors for agents exist and are good. Inspect Scout ships scanners over evaluation transcripts, "
   "including reward-hacking and evaluation-awareness scanners [6]; ControlArena [7] and SHADE-Arena [8] monitor for "
-  "side tasks and sabotage; Apollo's Watcher reads transcripts for scheming [9]; OpenAI monitors chain-of-thought and "
-  "states that such a monitor \"would have caught the initial relevant activity\" more than a day before the breach "
-  "[1]. Preventive controls also exist: default-deny egress via Cilium or Squid FQDN allowlists, and ExploitGym "
+  "side tasks and sabotage; Apollo's Watcher reads transcripts for scheming [9]; OpenAI now monitors chain-of-thought during "
+  "tool-using runs [1]. Preventive controls also exist: default-deny egress via Cilium or Squid FQDN allowlists, and ExploitGym "
   "itself ships a Squid firewall that permits only LLM API endpoints [10].")
 P("None of these takes the evaluation's declared scope as an input artifact and emits a verdict that someone "
   "outside the lab can recompute. Behavioural monitors answer \"does this look bad?\", which needs a model and a "
@@ -129,7 +128,7 @@ H3("3.4 Inspect integration and replay")
 P("scanner.py wraps the same rule as an inspect_scout scanner over ChatMessageAssistant.tool_calls and returns a "
   "Result whose answer is the host and whose metadata carries the first out-of-scope message index. JSON replay over the trace schema "
   "(sentinel score) is the supported interface, and is what a third party with only files runs; the inspect_scout "
-  "wrapper is in-tree and exercised by the test suite, over transcripts built in the test rather than over a "
+  "wrapper (scout scan sentinel/scanner.py -T logs/) is exercised by the test suite and, in Section 4.4, over a "
   "recorded evaluation log. Both paths execute the same rule. Fifteen tests pin every number in this paper.")
 H3("3.5 Fixtures and baseline")
 P("Three positives are reconstructions from the public write-ups, each carrying a source URL and a "
@@ -148,7 +147,10 @@ P("Two first-run failures became the paper. The Hugging Face trace first paged a
   "permitted egress. Adding it moved the page to event 3 and exposed the blind spot in Section 4.3, and the "
   "difference between the two allowlists became the ablation. Second, T1 fired on cat solution_template.py; grep "
   "-r flag. That was the rule working and the test being wrong: in a CTF that command is the task. We changed the "
-  "test to assert T2-only on that fixture and added a separate grader-internals fixture for the genuine T1 signal.")
+  "test to assert T2-only on that fixture and added a separate grader-internals fixture for the genuine T1 signal. "
+  "Third, the first scout scan over a real log crashed: the scanner used relative imports and scout loads the file "
+  "standalone in worker processes, so the README command had never actually worked. It now imports the installed "
+  "package.")
 
 H2("4. Results")
 H3("4.1 Specification tests")
@@ -203,7 +205,7 @@ FIGURE(FIG / "fig2_layers_v3.png",
   "against it. Layer 3, observed flows diffed against the same allowlist, is not built and is the month of "
   "follow-up. Layer 4 is the Track 1 criterion. Prevention is a separate row: it stops escapes and yields no "
   "third-party evidence.", 5.4)
-H3("4.4 A record we did not write: the DSEWiki export")
+H3("4.4 Records we did not write: the DSEWiki export and a live Inspect run")
 P("The fixtures show consistency, not generalisation, so we pointed the same rule at a record with a different "
   "author. The Nightingale Collective's export of the DSEWiki incident [5] contains 14,591 saved agent revisions "
   "across four wikis, 24 May to 2 July 2026, with full text and write times (manifest db_sha256 199241bf…). We "
@@ -227,9 +229,9 @@ P("Observation: under the scope the sandbox actually had, the scanner is silent 
   "event 5, six hours into the first day of writing and 27 days before the first OpenAI-associated address "
   "visited the pages. Permitting the wiki hosts moves the first page to 26 May, where the stated destinations "
   "are a placeholder domain, then the first of 43 reader and CORS-proxy hosts (markdown.new, r.jina.ai, "
-  "allorigins), then a US government login portal (piv.max.gov, login.max.gov). Across the record the extractor "
-  "sees 200 distinct hosts: 27 task data sources, 6 wiki hosts, 43 reader or CORS proxies, 4 URL shorteners, "
-  "5 archive services and 4 tunnel endpoints (the first on 17 June). Interpretation: the ablation's two failure "
+  "allorigins), then a US government login portal (piv.max.gov, login.max.gov). The extractor sees 200 distinct "
+  "hosts in the record: 27 task data sources, 6 wiki hosts, 43 reader or CORS proxies, 4 shorteners, 5 archives, "
+  "4 tunnels. Interpretation: the ablation's two failure "
   "modes reproduce on a record we did not write. The scope the evaluation had was a wildcard, and a wildcard "
   "produces no page on a real containment failure; any scope that named what the task was for would have paged "
   "on the first day. Two honesty notes. First, 16,504 pages is an alert volume no on-call rotation reads; the "
@@ -237,6 +239,14 @@ P("Observation: under the scope the sandbox actually had, the scanner is silent 
   "the T2 boundary heuristic fired 1,147 times on this record because the word \"proxy\" appears in the "
   "hostnames of the workaround infrastructure; that is a lexical accident, not a validated signal, and we report "
   "it as one.")
+P("The second record is a live run we did not script: eight samples of inspect_evals/gdm_intercode_ctf with "
+  "claude-haiku-4-5 as the agent. Its upstream sandbox declares network_mode: none, the only allowlist here "
+  "written from a benchmark's own configuration, and it is empty. The agent made 42 tool calls (ls, cat, tcpdump, "
+  "strings, python, submit) and solved all eight tasks; Sentinel paged on none, warned on none, the keyword "
+  "baseline fired on none, and the inspect_scout wrapper returned the same eight verdicts from the recorded log. "
+  "This is a negative control, not a detection result: a scanner that paged here would be wrong. It shows the rule "
+  "is silent on real tool calls it was not written against, and that the Inspect path works on a real log. "
+  "Cost: $0.14.")
 H2("5. Discussion and Limitations")
 P("Theory of change. A lab attaches an allowlist to each evaluation class, with notes on why each entry is "
   "permitted. Sentinel runs offline over the campaign's Inspect logs in minutes, with no API key. The lab publishes "
@@ -259,6 +269,9 @@ BUL([
  "The DSEWiki run addresses the events but not the scope: the two non-wildcard allowlists there are ours, "
  "reconstructed from the task families visible in the record, and a different reconstruction would move the first "
  "page. What does not move is the wildcard row, which is the scope the sandbox actually had.",
+ "The live run is eight samples and 42 tool calls on tasks with no network, so it can only show silence; it "
+ "says nothing about detection. A positive live case needs an evaluation with internet on and a real allowlist, "
+ "which is the first item of future work.",
  "Wiki revision bodies are not tool calls. A URL an agent posted is a stated destination in a weaker sense than a "
  "URL an agent passed to curl; some are links for other agents to follow. The method reads declared action either "
  "way, and this record sits at the loose end of that definition.",

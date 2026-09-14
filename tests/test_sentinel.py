@@ -147,3 +147,26 @@ def test_dsewiki_export_wildcard_silent_named_scope_pages_day_one():
     fp = scan_trace(trace, data)["first_page"]
     assert fp["event_index"] == 5 and fp["destination"] == "wikiservice.at"
     assert revs[5][0].startswith("2026-05-24")
+
+
+# --- A live Inspect run we did not script: gdm_intercode_ctf, network_mode: none (logs/intercode/*.eval) ---
+def test_live_intercode_run_is_silent_under_empty_scope():
+    """Pins report §4.4: 8 real samples, 42 tool calls, empty declared scope, no page, no warn, baseline 0."""
+    import glob, pytest
+    logs = sorted(glob.glob(str(ROOT / "logs/intercode/*.eval")))
+    if not logs:
+        pytest.skip("no recorded Inspect log")
+    from inspect_ai.log import read_eval_log
+    log = read_eval_log(logs[-1])
+    assert log.status == "success" and len(log.samples) == 8
+    al = load_allowlist(ROOT / "allowlists/intercode_ctf_none.json")
+    calls = 0
+    for s in log.samples:
+        events = [{"i": i, "arguments": tc.arguments}
+                  for i, tc in enumerate(tc for m in s.messages for tc in (getattr(m, "tool_calls", None) or []))]
+        calls += len(events)
+        r = scan_trace({"trace_id": str(s.id), "events": events}, al)
+        assert r["first_page"] is None
+        assert not [f for f in r["findings"] if f["severity"] == "WARN"]
+        assert keyword_baseline({"events": events})["first_page"] is None
+    assert calls == 42

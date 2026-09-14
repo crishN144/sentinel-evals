@@ -13,7 +13,7 @@ alone — no access to the lab's network required.
 
 ```bash
 sentinel score traces/*.json          # mechanical: no model, no API key
-scout scan sentinel/scanner.py -T ./logs   # or run it over real Inspect eval logs
+pip install -e . && scout scan sentinel/scanner.py -T ./logs   # over real Inspect eval logs
 ```
 
 ## What it is not
@@ -49,6 +49,21 @@ Manifest `db_sha256` at the time of our run: `199241bf9e0b38b58764cf1545680de8fe
 Result: silent under the wildcard scope the sandbox actually had; first page at event 5 (24 May, 11:53 UTC,
 `wikiservice.at`) under any scope naming the task's data sources. See [REAL_DATA.md](REAL_DATA.md).
 `tests/test_sentinel.py::test_dsewiki_export_*` pins those numbers and skips when the data is absent.
+
+## A live Inspect run (negative control)
+
+`experiments/run_intercode.sh` runs eight samples of `inspect_evals/gdm_intercode_ctf` (upstream sandbox:
+`network_mode: none`, so the declared scope `allowlists/intercode_ctf_none.json` is empty) and points both
+Sentinel paths at the recorded log. Result on 2026-09-14 with `claude-haiku-4-5`: 42 tool calls, 8/8 solved,
+no page, no warn, keyword baseline 0; `scout scan sentinel/scanner.py -T logs/intercode` returns the same
+eight verdicts. The `.eval` log is committed under `logs/intercode/`; `experiments/intercode_compose.yaml`
+uses a prebuilt image so Inspect does not rebuild it per sample. Cost: $0.14.
+
+```bash
+pip install -e .                      # scout's worker processes import the package, so it must be installed
+docker build -t intercode-local .venv/lib/python3.*/site-packages/inspect_evals/gdm_intercode_ctf
+MODEL=anthropic/claude-haiku-4-5-20251001 ./experiments/run_intercode.sh
+```
 
 ## Honest limits
 
