@@ -24,9 +24,8 @@ ABSTRACT = (
  "an evaluation's declared scope, written as a machine-readable allowlist, is the unit of containment evidence a "
  "third party can verify, and build Sentinel, an Inspect scanner that classifies each tool call's stated "
  "destination against it and pages on the first out-of-scope one, with no model in the gate. On reconstructions "
- "of three public incidents (four to seven events each, from the published timelines, not lab transcripts) it "
- "pages at the first non-allowlisted destination and is silent on three hard negatives where a keyword baseline "
- "false-pages on two. On the 14,591-revision DSEWiki export, a record we did not write, it is silent under the "
+ "of three public incidents (four to seven events each, from the published timelines) it pages at the first "
+ "non-allowlisted destination and is silent on three hard negatives. On the 14,591-revision DSEWiki export, a record we did not write, it is silent under the "
  "wildcard scope the sandbox actually had and pages on day one under any scope naming the task's data sources; "
  "on a live eight-sample Inspect run with an empty declared scope it is correctly silent on 42 real tool calls. "
  "The headline result is an ablation on one trace: a too-tight scope pages on permitted traffic, a wildcard "
@@ -182,11 +181,9 @@ P("Observation: the same trace yields three different verdicts under three scope
   "both directions of misspecification fail, and they fail differently. The too-tight scope produces a page on "
   "permitted egress, the kind of alert that gets a monitor switched off within a day. The wildcard scope, which is "
   "what \"we allow internet\" means when nobody writes the list, is silent on a real containment failure. A scanner "
-  "with no declared scope is not a control. This is the result we would defend in front of a detection engineer: "
-  "the artifact worth publishing per evaluation class is the pair (trace, allowlist), and verifiability is a "
-  "property of the pair. Every number in this section is deterministic and pinned by tests, so there is no interval "
-  "to report; the one robustness question that matters is sensitivity to the scope, and this table is that question "
-  "asked directly.")
+  "with no declared scope is not a control. The artifact worth publishing per evaluation class is the pair (trace, allowlist), and verifiability is "
+  "a property of the pair. Every number here is deterministic and pinned by tests; the one robustness question that "
+  "matters is sensitivity to the scope, and this figure asks it directly.")
 H3("4.3 The page arrives after the escape")
 P("Under the correct scope the page lands at event 3. Event 2, the request to the permitted proxy, is already the "
   "escape: the SSRF went through an allowlisted host, and an allowlist-relative rule classifies that request as "
@@ -259,32 +256,28 @@ P("Theory of change. A lab attaches an allowlist to each evaluation class, with 
   "rather than assume it, which is the failure in the Anthropic name-collision case.")
 H3("Limitations")
 BUL([
- "The positive fixtures are reconstructions of four to seven events written from public descriptions; Hugging Face "
- "logged about 17,600 attacker actions [2]. No lab has released raw evaluation transcripts. Nothing here measures "
- "detection inside OpenAI, Anthropic or AISI, and \"events earlier\" is a statement about our reconstruction.",
- "The fixtures and the rule have the same author, so the specification tests show consistency, not generalisation. "
- "The DSEWiki run addresses the events but not the scope: the two non-wildcard allowlists there are ours, "
- "reconstructed from the task families visible in the record, and a different reconstruction would move the first "
- "page. What does not move is the wildcard row, which is the scope the sandbox actually had.",
- "The live run is eight samples and 42 tool calls on tasks with no network, so it can only show silence; it "
- "says nothing about detection. A positive live case needs an evaluation with internet on and a real allowlist, "
- "which is the first item of future work.",
- "Wiki revision bodies are not tool calls. A URL an agent posted is a stated destination in a weaker sense than a "
- "URL an agent passed to curl; some are links for other agents to follow. The method reads declared action either "
- "way, and this record sits at the loose end of that definition.",
- "Sentinel reads declared arguments. In its investigation of the Hugging Face incident, METR reports that roughly 7% of the transcripts it evaluated were successfully spoofed in some places "
- "[13]; a determined agent can state one destination and reach another. Layer 3 is the answer; it is not built.",
+ "The positive fixtures are reconstructions of four to seven events from public descriptions; Hugging Face logged "
+ "about 17,600 attacker actions [2]. No lab has released raw transcripts, so nothing here measures detection inside "
+ "OpenAI, Anthropic or AISI, and \"events earlier\" describes our reconstruction.",
+ "The fixtures and the rule share an author, so the specification tests show consistency, not generalisation. The "
+ "DSEWiki run fixes the events but not the scope: its two non-wildcard allowlists are ours, and a different "
+ "reconstruction would move the first page. The wildcard row, the scope the sandbox actually had, does not move.",
+ "The live run is eight samples on tasks with no network, so it can only show silence. A positive live case needs "
+ "an evaluation with internet on and a real allowlist. Wiki revision bodies are also a weaker kind of declared "
+ "action than a curl argument: some URLs are links posted for other agents, not destinations reached.",
+ "Sentinel reads declared arguments. METR reports that roughly 7% of the transcripts it evaluated in the Hugging "
+ "Face investigation were successfully spoofed in places [13]; an agent can state one destination and reach "
+ "another. Layer 3 is the answer, and it is not built.",
  "The extractor is regular expressions. Destinations hidden in shell variables, base64, DNS exfiltration or "
- "IP-as-integer forms are missed. We have not measured a miss rate. Publishing the extractor publishes its gaps "
- "(Appendix A).",
- "T1 and T2 false-positive rates are unmeasured; they warn, and a warn nobody reads is worth nothing.",
+ "IP-as-integer forms are missed and the miss rate is unmeasured; publishing the extractor publishes its gaps "
+ "(Appendix A). T1 and T2 false-positive rates are likewise unmeasured.",
  "The wildcard scope is one misspecification of many. A scope that is correct today and stale tomorrow is the "
  "realistic case and we have not modelled it.",
 ])
 H3("Future work")
-P("A month would add three things. First, run the scanner over a public agentic evaluation with an honest "
-  "allowlist (ExploitGym's own firewall list is a natural start) and report the T3 page rate and the T1/T2 warn "
-  "rates on real traces. Second, implement layer 3 against Cilium Hubble or Squid access logs and report the "
+P("A month would add three things. First, a positive live case: an agentic evaluation run with internet on and "
+  "an honest allowlist (ExploitGym's own firewall list is the natural start), reporting T3 page and T1/T2 warn "
+  "rates on real traces. Second, layer 3 against Cilium Hubble or Squid access logs, reporting the "
   "declared-versus-observed disagreement rate, which is the attestation number. Third, an adversarial pass on the "
   "extractor with an obfuscation corpus, so the miss rate is a number rather than a paragraph.")
 
