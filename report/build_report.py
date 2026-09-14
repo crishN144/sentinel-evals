@@ -149,7 +149,7 @@ TABLE([
 ], "Table 1. Specification tests over the seven fixtures. \"Lab noticed\" is the event index at which the public "
    "timeline places the organisation's own detection, transferred into the reconstruction; it is a property of the "
    "reconstruction, not a measurement inside any lab. The keyword baseline has no allowlist.",
-   [1.28, 0.68, 1.00, 1.92, 0.78, 0.84])
+   [1.22, 0.62, 1.20, 1.86, 0.76, 0.84])
 P("Observation: Sentinel pages at the first non-allowlisted stated destination on all three positives and is "
   "silent on all three negatives. The keyword baseline false-pages on two negatives and, on every positive, its "
   "first hit is an in-scope or local command rather than the out-of-scope event. Interpretation: these are tests "
@@ -413,6 +413,17 @@ def fixed_layout(table, widths):
             gc.set(qn("w:w"), str(int(wdt * 1440)))
 
 
+def cell_padding(table, top=40, bottom=40, left=90, right=90):
+    """Default tables have no cell margin: wrapped text touches the rule above."""
+    tblPr = table._tbl.tblPr
+    mar = OxmlElement("w:tblCellMar")
+    for edge, val in (("top", top), ("left", left), ("bottom", bottom), ("right", right)):
+        e = OxmlElement(f"w:{edge}")
+        e.set(qn("w:w"), str(val)); e.set(qn("w:type"), "dxa")
+        mar.append(e)
+    tblPr.append(mar)
+
+
 def add_borders(table):
     tbl = table._tbl
     tblPr = tbl.tblPr
@@ -496,6 +507,7 @@ def build():
             rows, cap, widths = payload
             t = d.add_table(rows=len(rows), cols=len(rows[0])); add_borders(t)
             if widths: fixed_layout(t, widths)
+            cell_padding(t)
             for row in t.rows:
                 trPr = row._tr.get_or_add_trPr(); cs = OxmlElement('w:cantSplit'); trPr.append(cs)
                 for cell in row.cells:
@@ -512,6 +524,9 @@ def build():
         for row in t.rows:
             for cell in row.cells:
                 for pp in cell.paragraphs:
+                    pp.paragraph_format.line_spacing = 1.12
+                    pp.paragraph_format.space_after = Pt(0)
+                    pp.paragraph_format.space_before = Pt(0)
                     for r in pp.runs: r.font.name = "Old Standard TT"
     for p in d.paragraphs:
         if p.style.name == "normal":
