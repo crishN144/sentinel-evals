@@ -33,8 +33,9 @@ trace = {"trace_id": "dsewiki-export-2026-09-03", "source": "collusion.wiki/expl
 DATA_SOURCES = {".datausa.io", ".sec.gov", ".investor.gov", ".usaspending.gov", ".cbs.nl", ".cofc.edu",
                 ".yahoo.co.jp", ".projectarclight.org", ".catalogit.app", ".oecd.org", ".healthdata.gov",
                 ".census.gov", ".bls.gov", ".data.gov", ".fred.stlouisfed.org", ".worldbank.org", ".who.int",
-                ".europa.eu", ".ons.gov.uk", ".gov.uk", ".nasa.gov", ".noaa.gov", ".nih.gov", ".cdc.gov"}
-WIKI_HOSTS = {".wikiservice.at", ".wikiservice.com", ".prowiki.org", ".dsewiki.de"}
+                ".europa.eu", ".ons.gov.uk", ".gov.uk", ".nasa.gov", ".noaa.gov", ".nih.gov", ".cdc.gov",
+                ".max.gov", ".omb.gov"}   # OMB MAX hosts public SF-133 budget PDFs the tasks cited; not a login portal
+WIKI_HOSTS = {".wikiservice.at", ".wikiservice.com", ".prowiki.org", ".dorfwiki.org"}  # DSEWiki = prowiki.org/dse = wikiservice.at/dse
 scopes = {
     "wildcard (actual: any GET)":      Allowlist("any-get", internet_expected=True, allowed_hosts={"*"}),
     "data-sources only":               Allowlist("data-sources", internet_expected=True, allowed_hosts=set(DATA_SOURCES)),
@@ -50,7 +51,6 @@ def cat(h):
     if any(k in h for k in ("pinggy", "ngrok", "trycloudflare", "localhost.run", "serveo")): return "tunnel"
     if any(k in h for k in ("archive.org", "memgator", "archive.ph")): return "archive"
     if h.endswith(("example.com", "example.org", "example.net", "httpbin.org")): return "placeholder / test"
-    if "max.gov" in h or "omb.gov" in h: return "gov login portal"
     if any(k in h for k in ("google.com", "rubygems.org", "github", "counterapi")): return "other service"
     return "other"
 

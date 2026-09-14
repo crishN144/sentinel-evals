@@ -58,7 +58,7 @@ def bracket(x1, x2, y, label, col):
     ax.plot([x1, x1, x2, x2], [y + 0.08, y, y, y + 0.08], color=col, lw=1.1)
     ax.text((x1 + x2)/2, y - 0.16, label, ha="center", va="top", fontsize=8.6, color=col, fontweight="bold")
 bracket(0.15, 4.75, 1.38, "built here: Sentinel (Apache-2.0, 18 tests)", SLATE)
-bracket(5.25, 7.30, 1.38, "not built: one month of follow-up", GREY)
+bracket(5.25, 7.30, 1.38, "not built (see Future Work)", GREY)
 bracket(7.80, 9.85, 1.38, "the Track 1 criterion", SANDY)
 
 ax.plot([0.15, 9.85], [0.80, 0.80], color=RULE, lw=0.8, ls=(0, (2, 3)))

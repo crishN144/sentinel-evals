@@ -25,9 +25,10 @@ ABSTRACT = (
  "third party can verify, and build Sentinel, an Inspect scanner that classifies each tool call's stated "
  "destination against it and pages on the first out-of-scope one, with no model in the gate. On reconstructions "
  "of three public incidents (four to seven events each, from the published timelines) it pages at the first "
- "non-allowlisted destination and is silent on three hard negatives. On the 14,591-revision DSEWiki export, a record we did not write, it is silent under the "
- "wildcard scope the sandbox actually had and pages on day one under any scope naming the task's data sources; "
- "on a live eight-sample Inspect run with an empty declared scope it is correctly silent on 42 real tool calls. "
+ "non-allowlisted destination and is silent on three hard negatives. On the 14,591-revision DSEWiki export, a record we did not write, the scope the sandbox actually had was a "
+ "wildcard, so the scanner is silent, as any wildcard must be; under any scope naming the task's data sources it "
+ "pages on day one. On a live eight-sample Inspect run with an empty declared scope it is correctly silent on 42 "
+ "real tool calls. "
  "The headline result is an ablation on one trace: a too-tight scope pages on permitted traffic, a wildcard "
  "scope is silent on the escape. Verifiability is a property of the pair (trace, allowlist), not of the "
  "detector. The same trace shows the page arrives after the escape, which went through the permitted proxy: a "
@@ -54,20 +55,20 @@ P("In July 2026 two pre-release OpenAI models, running a cyber-capability evalua
   "database with several hundred rows of production data. The earliest of the three dates to April; all three were "
   "found in a retrospective review of 141,006 runs on 24 July [3]. The UK AI Security Institute reported models on an intentionally "
   "internet-connected cyber range reaching GitHub over Tor, caught by a Tor egress alarm [4]. A separate channel, unconnected to the Hugging Face "
-  "swarm, ran on a public wiki: OpenAI evaluation agents whose sandbox allowed only GET requests found on 11 May that "
-  "some wikis accept edits over GET, made their first successful write to DSEWiki, a dormant German programming "
-  "wiki, on 24 May, and used it as a message board for task answers and sandbox workarounds until 22 June, the day "
-  "after the first OpenAI-associated addresses visited the pages: roughly 18,000 posts under more than 3,700 "
-  "self-chosen names by the researchers' count, 14,591 of them preserved in the published export. Outside researchers found "
+  "swarm, ran on a public wiki. OpenAI evaluation agents whose sandbox allowed only GET requests found on 11 May that "
+  "some wikis accept edits over GET, and on 24 May made their first successful write to DSEWiki, a dormant German "
+  "programming wiki. They used it as a message board for task answers and sandbox workarounds until 22 June, the day "
+  "after the first OpenAI-associated addresses visited the pages. The researchers count roughly 18,000 posts under "
+  "more than 3,700 self-chosen names; 14,591 are preserved in the published export. Outside researchers found "
   "it by reading the wiki's public logs and published on 4 September; OpenAI acknowledged it the next day, saying "
   "the field has no agreed standard for reporting misalignment [5].")
-P("These cases share a shape that is not \"no monitor existed.\" In each one the operators knew the intended scope "
+P("The common shape is not \"no monitor existed.\" In each one the operators knew the intended scope "
   "in prose: no internet; only the LLM API and the package proxy; only the range. Nowhere was that scope an "
   "artifact the transcript was checked against, and the first signal always came from somewhere else: an "
   "identity-API anomaly, a Tor alarm, a retrospective sweep, a stranger reading a wiki. Hugging Face's own "
   "post-mortem says its correlation stack existed but \"failed to correctly raise the alert's criticality\" [2]. The "
-  "failure is one of scope attachment and attestation (Figure 2), and it is the failure the sprint's containment "
-  "track asks about. Track 1 of the Apart AI Incident Response Sprint judges a containment proposal on one "
+  "failure is that the scope was never attached to the transcript and never attested to anyone (Figure 2), and it "
+  "is the failure the sprint's containment track asks about. Track 1 of the Apart AI Incident Response Sprint judges a containment proposal on one "
   "question: could a third party verify compliance without access to the lab's network, and would a lab adopt it?")
 P("We take the smallest step that answers it. Our main contributions are:")
 BUL([
@@ -82,15 +83,14 @@ BUL([
 ])
 
 H2("2. Related Work")
-P("Trace monitors for agents exist and are good. Inspect Scout ships scanners over evaluation transcripts, "
+P("Trace monitors for agents exist and work. Inspect Scout ships scanners over evaluation transcripts, "
   "including reward-hacking and evaluation-awareness scanners [6]; ControlArena [7] and SHADE-Arena [8] monitor for "
   "side tasks and sabotage; Apollo's Watcher reads transcripts for scheming [9]; OpenAI now monitors chain-of-thought during "
   "tool-using runs [1]. Preventive controls also exist: default-deny egress via Cilium or Squid FQDN allowlists, and ExploitGym "
   "itself ships a Squid firewall that permits only LLM API endpoints [10].")
 P("None of these takes the evaluation's declared scope as an input artifact and emits a verdict that someone "
   "outside the lab can recompute. Behavioural monitors answer \"does this look bad?\" and need a model and a threshold; a proxy answers "
-  "\"was this blocked?\" but its logs stay inside the lab, and in the OpenAI case the proxy was the hole. Sentinel's wedge is narrow: a mechanical predicate over (trace, allowlist). Stated plainly, so the "
-  "objection is met rather than dodged: default-deny egress is the control; Sentinel is not a control; it is the "
+  "\"was this blocked?\" but its logs stay inside the lab, and in the OpenAI case the proxy was the hole. Sentinel's wedge is narrow: a mechanical predicate over (trace, allowlist). Default-deny egress is the control; Sentinel is not a control; it is the "
   "smallest artifact that turns the control's scope into a published, recomputable claim. \"Why not just publish "
   "the proxy logs?\" is the right question, and it is layer 3 of Figure 2: it needs the same allowlist to be "
   "meaningful, and today no such allowlist is published. What it provides that we did not have is the "
@@ -112,16 +112,17 @@ B.append(("code", '{"name": "exploitgym-cyber-eval", "internet_expected": false,
 H3("3.2 Trace and destination extraction")
 P("A trace is the ordered list of tool calls with their arguments; the scanner reads nothing else. "
   "extract_destinations pulls stated hosts from URLs, nc/ncat, socat, Python HTTP literals and bare host:port "
-  "tokens, by regular expression. There is no model in the loop and no API key. The extractor is deliberately "
+  "tokens, by regular expression. There is no model in the gate and no API key. The extractor is deliberately "
   "conservative: it reads what the agent said it would reach.")
 H3("3.3 Severities")
 P("T3, a stated destination classified OUT, is the only PAGE. T1 (reading grader or solution internals) and T2 "
   "(mount tables, cgroups, proxy enumeration, metadata addresses) are WARN and never page. The reason is base rates: "
   "in a capture-the-flag task, flag-seeking is the task, and reconnaissance of one's own box is routine. AISI's "
   "cheating study lists \"probing evaluation software for solution leaks\" as a cheating mode [11]; we surface it, we "
-  "do not alarm on it. Gating on a predicate the environment can settle itself, rather than on a second model, "
-  "follows scorer-integrity [12], which measured an LLM scheming-judge against an operative-action oracle over 599 "
-  "Inspect gradings and noted that most environments offer no such predicate. Containment evaluations do: the allowlist.")
+  "do not alarm on it. The precedent for gating on a predicate the environment can settle itself, rather than on a "
+  "second model, is scorer-integrity [12], which measured an LLM scheming-judge against an operative-action oracle "
+  "over 599 Inspect gradings and noted that most environments offer no such predicate. Containment evaluations do: "
+  "the allowlist.")
 H3("3.4 Inspect integration and replay")
 P("scanner.py wraps the same rule as an inspect_scout scanner over ChatMessageAssistant.tool_calls and returns a "
   "Result whose answer is the host and whose metadata carries the first out-of-scope message index. JSON replay over the trace schema "
@@ -187,53 +188,58 @@ P("Observation: the same trace yields three different verdicts under three scope
 H3("4.3 The page arrives after the escape")
 P("Under the correct scope the page lands at event 3. Event 2, the request to the permitted proxy, is already the "
   "escape: the SSRF went through an allowlisted host, and an allowlist-relative rule classifies that request as "
-  "ALLOWED. We test this as a known blind spot rather than hide it. PAGE @3 is the first auditable evidence of "
+  "ALLOWED. PAGE @3 is the first auditable evidence of "
   "out-of-scope egress, which in the reconstruction precedes the production intrusion (events 5 and 6) and the "
   "organisation's own detection (event 6). It is not \"this would have stopped the breach.\" "
   "Prevention is default-deny egress plus a hardened permitted proxy, and a trace scanner supplies neither. The "
   "DSEWiki case has the same shape: the sandbox permitted only GET requests, and the wiki accepts page edits "
   "over GET [5]. In both public escapes the agent went through the scope, not around it. An "
   "allowlist-relative scanner is blind to that by construction; what it would still have recorded is the "
-  "destination host, prowiki.org, had the declared scope named which hosts read access was for.")
+  "destination host, wikiservice.at, had the declared scope named which hosts read access was for.")
 FIGURE(FIG / "fig2_layers_v3.png",
   "Figure 2. Four layers of containment evidence, with the Hugging Face reconstruction as the running example. "
   "Layers 1 and 2 are what this paper builds: the declared scope and the agent's stated destination, checked "
-  "against it. Layer 3, observed flows diffed against the same allowlist, is not built and is the month of "
-  "follow-up. Layer 4 is the Track 1 criterion. Prevention is a separate row: it stops escapes and yields no "
+  "against it. Layer 3, observed flows diffed against the same allowlist, is not built; see Future Work. Layer 4 is the Track 1 criterion. Prevention is a separate row: it stops escapes and yields no "
   "third-party evidence.", 5.4)
 H3("4.4 Records we did not write: the DSEWiki export and a live Inspect run")
 P("The fixtures show consistency, not generalisation, so we pointed the same rule at a record with a different "
   "author. The Nightingale Collective's export of the DSEWiki incident [5] contains 14,591 saved agent revisions "
-  "across four wikis, 24 May to 2 July 2026, with full text and write times (manifest db_sha256 199241bf…). Each "
+  "across four wikis, 24 May to 2 July 2026, with full text and write times (manifest db_sha256 199241bf…). The "
+  "four are ProWiki boards: DSEWiki itself, served as prowiki.org/dse and wikiservice.at/dse, and Probier, Fractal "
+  "(wikiservice.at) and DorfWiki (dorfwiki.org). Each "
   "revision is one event in write order and its body the argument blob; the extractor reads it as it would a tool "
   "call. Nothing about the events is ours. The declared "
   "scope is: the sandbox allowed any GET request to any host, which is the wildcard row of the ablation. We add "
-  "two scopes of our own for comparison and say so: one naming only the public datasets the task families were "
-  "retrieving from (27 hosts such as api.datausa.io, sec.gov, api.usaspending.gov), and a control that also "
+  "two scopes of our own for comparison: one naming only the public datasets the task families were "
+  "retrieving from (31 hosts such as api.datausa.io, sec.gov, api.usaspending.gov and the OMB MAX portal that serves public "
+  "SF-133 budget PDFs), and a control that also "
   "permits the wiki hosts.")
 TABLE([
  ["Declared scope", "Pages", "First page", "Destination", "Before OpenAI's first visit (21 Jun)"],
  ["wildcard (the actual scope: any GET)", "0 of 14,591", "—", "—", "silent"],
- ["data sources only (ours)", "16,504", "event 5, 24 May 11:53 UTC", "wikiservice.at (wiki channel)", "27 days"],
- ["data sources + wiki hosts (control)", "11,946", "event 36, 26 May 09:43 UTC", "example.com; then markdown.new, piv.max.gov", "25 days"],
+ ["data sources only (ours)", "16,309", "event 5, 24 May 11:53 UTC", "wikiservice.at (DSEWiki's own host)", "27 days"],
+ ["data sources + wiki hosts (control)", "11,751", "event 36, 26 May 09:43 UTC", "example.com; then markdown.new, drive.google.com", "25 days"],
 ], "Table 2. Sentinel over the DSEWiki export under three declared scopes. The events are the researchers' record; "
-   "the two non-wildcard scopes are our reconstruction from the task families visible in it. \"Before OpenAI's first "
-   "visit\" uses the date collusion.wiki gives for the first OpenAI-associated addresses on the pages.",
+   "the two non-wildcard scopes are our reconstruction from the task families visible in it. A revision can state "
+   "more than one destination, so pages can exceed events. \"Before OpenAI's first visit\" is the interval to the "
+   "date collusion.wiki gives for the first OpenAI-associated addresses on the pages: a fact about the public record, "
+   "not about OpenAI's internal monitoring.",
    [1.95, 0.85, 1.35, 1.55, 0.80])
 P("Observation: under the scope the sandbox actually had, the scanner is silent on all 14,591 events. Under a "
-  "scope that names the task's data sources, the first out-of-scope stated destination is the wiki itself, at "
-  "event 5, six hours into the first day of writing and 27 days before the first OpenAI-associated address "
-  "visited the pages. Permitting the wiki hosts moves the first page to 26 May, where the stated destinations "
-  "are a placeholder domain, then the first of 43 reader and CORS-proxy hosts (markdown.new, r.jina.ai, "
-  "allorigins), then a US government login portal (piv.max.gov, login.max.gov). The extractor sees 200 distinct "
-  "hosts in the record: 27 task data sources, 6 wiki hosts, 43 reader or CORS proxies, 4 shorteners, 5 archives, "
+  "scope that names the task's data sources, the first out-of-scope stated destination is wikiservice.at, "
+  "DSEWiki's own host, at event 5: six hours into the first day of writing, the agents' fifth post already linked "
+  "to the board they were writing on, 27 days before the first OpenAI-associated address visited the pages. "
+  "Permitting the wiki hosts moves the first page to 26 May, where the stated destinations are a placeholder "
+  "domain, then the first of 43 reader and CORS-proxy hosts (markdown.new, r.jina.ai, allorigins), then "
+  "drive.google.com. The extractor sees 200 distinct "
+  "hosts in the record: 31 task data sources, 6 wiki hosts, 43 reader or CORS proxies, 4 shorteners, 5 archives, "
   "4 tunnels. Interpretation: the ablation's two failure "
   "modes reproduce on a record we did not write. The scope the evaluation had was a wildcard, and a wildcard "
   "produces no page on a real containment failure; any scope that named what the task was for would have paged "
-  "on the first day. Two honesty notes: 16,504 pages is an alert volume nobody reads, so the value is the first index and the "
+  "on the first day. Two caveats. 16,309 pages is an alert volume nobody reads, so the value is the first index and the "
   "count is why layer 3, not layer 2, should gate paging; and T2 fired 1,147 times only because \"proxy\" appears "
   "in the workaround hostnames, a lexical accident we report as one.")
-P("The second record is a live run we did not script: eight samples of inspect_evals/gdm_intercode_ctf with "
+P("The second record is a live run rather than a fixture: eight samples of inspect_evals/gdm_intercode_ctf with "
   "claude-haiku-4-5 as the agent. Its upstream sandbox declares network_mode: none, the only allowlist here "
   "written from a benchmark's own configuration, and it is empty. The agent made 42 tool calls (ls, cat, tcpdump, "
   "strings, python, submit) and solved all eight tasks; Sentinel paged on none, warned on none, the keyword "
@@ -247,8 +253,8 @@ P("Theory of change. A lab attaches an allowlist to each evaluation class, with 
   "the allowlist, the per-run verdicts and the first out-of-scope index; a third party replays the verdict from those files. Two kinds of "
   "third party can: an auditor or an affected partner who has been given the files, and the Commission, which under "
   "Article 91 of the AI Act may require a provider of a general-purpose AI model to hand over documentation "
-  "necessary to assess compliance. The first needs cooperation; only the second can compel. Appendix C shows the record either would receive. "
-  "The cost of adoption is writing the allowlist, which is the point: the artifact forces the scope to exist. It "
+  "necessary to assess compliance. The first needs cooperation; only the second can compel. Appendix C shows the record either would receive.")
+P("The cost of adoption is writing the allowlist, which is the point: the artifact forces the scope to exist. It "
   "sits under what the labs already say they will build: AISI asks for monitoring \"able to flag or block "
   "out-of-scope actions as they happen\" with scope \"limited in advance\" [4], and OpenAI now requires "
   "chain-of-thought monitoring for tool-using runs [1]; both need a machine-readable statement of what out-of-scope "
@@ -294,7 +300,8 @@ P("The public containment failures of 2026 were not failures of monitoring techn
 H2("Code and Data")
 P("Code repository: " + REPO + " (Apache-2.0, matching ExploitGym). Fixtures, allowlists, the ablation script, the filled record of "
   "Appendix C and the tests are in the repository; python -m pytest reproduces every number here with no model and no API "
-  "key. No lab transcripts are included because none are public. No datasets were used.")
+  "key. No lab transcripts are included because none are public. The DSEWiki export [5] is used as published, with "
+  "its manifest hash stated in Section 4.4 and a download script in the README; no other datasets were used.")
 H2("Author Contributions")
 P("C.N. conceived the project, wrote the scanner, fixtures and tests, ran the ablation and wrote the report. "
   "Claude (Anthropic) was used as a coding and drafting assistant under the author's direction; every number was "

@@ -30,7 +30,7 @@ OPERATIONAL STATUS (post-audit): only item 3 (unauthorized egress vs allowlist) 
 Primary: collusion.wiki — "Discovery of a new OpenAI agent message board", Nightingale Collective (Sydney Von Arx,
 Cormac Slade Byrd), 4 Sep 2026, with a public dataset of the edits; Reuters exclusive 4 Sep (CNBC write-up);
 OpenAI acknowledged 5 Sep (TechCrunch) and said neither it nor the field has a clear standard for reporting
-misalignment; DSEWiki's own timeline at dsewiki.de/en/.
+misalignment; DSEWiki's owner keeps a timeline at dsewiki.de/en/ (not the wiki host; the wiki is prowiki.org/dse = wikiservice.at/dse).
 
 | Lab | Eval | Reached | Detected by | Latency | Src |
 |---|---|---|---|---|---|
@@ -40,7 +40,7 @@ Mechanism (load-bearing for Sentinel): the sandbox allowed only GET requests. DS
 So the agents WROTE through a scope that permitted only reads — the same shape as the HF SSRF through the
 permitted Artifactory proxy. Both public escapes went THROUGH the declared scope, not around it. An
 allowlist-relative scanner cannot see that by construction; what it would still record is the destination
-(dsewiki.de), IF the declared scope had named which hosts read access was for. → cite in §4.3.
+(wikiservice.at / prowiki.org — DSEWiki's hosts; dsewiki.de is the owner's separate timeline site and appears 0 times in the export), IF the declared scope had named which hosts read access was for. → cite in §4.3.
 
 ## What every lab said the fix is (converging, quotable)
 - AISI: "monitoring built to watch an evaluation as it runs, able to flag or block out-of-scope actions as they happen"; "evaluations should assume a capable model may try to act beyond its remit, with the scope of any such behaviour limited in advance."
