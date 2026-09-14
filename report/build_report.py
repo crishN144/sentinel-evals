@@ -211,7 +211,7 @@ FIGURE(FIG / "fig2_layers_v3.png",
   "Figure 2. Four layers of containment evidence, with the Hugging Face reconstruction as the running example. "
   "Layers 1 and 2 are what this paper builds: the declared scope and the agent's stated destination, checked "
   "against it. Layer 3, observed flows diffed against the same allowlist, is not built; see Future Work. Layer 4 is the Track 1 criterion. Prevention is a separate row: it stops escapes and yields no "
-  "third-party evidence.", 5.4)
+  "third-party evidence.", 4.9)
 H3("4.4 Records we did not write: the DSEWiki export and a live Inspect run")
 P("The fixtures show consistency, not generalisation, so we pointed the same rule at a record with a different "
   "author. The Nightingale Collective's export of the DSEWiki incident [5] contains 14,591 saved agent revisions "
@@ -612,13 +612,16 @@ def build():
         if kind == "h2":
             _h = d.add_paragraph(payload, style="Heading 2")
             _h.paragraph_format.keep_with_next = True
-            if payload.startswith(("Appendix A", "Appendix C", "References")):
+            _h.paragraph_format.space_before = Pt(12); _h.paragraph_format.space_after = Pt(3)
+            if payload.startswith(("Appendix A", "Appendix C")):
                 _h.paragraph_format.page_break_before = True
-        elif kind == "h3": d.add_paragraph(payload, style="Heading 3").paragraph_format.keep_with_next = True
+        elif kind == "h3":
+            _h3 = d.add_paragraph(payload, style="Heading 3"); _h3.paragraph_format.keep_with_next = True
+            _h3.paragraph_format.space_before = Pt(8); _h3.paragraph_format.space_after = Pt(2)
         elif kind == "p":
             p = d.add_paragraph(style="normal"); write_text(p, payload)
             p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-            p.paragraph_format.space_after = Pt(5)
+            p.paragraph_format.space_after = Pt(4)
         elif kind == "code":
             for line in payload.split("\n"):
                 cp = d.add_paragraph(style="normal"); r = cp.add_run(line)
@@ -684,7 +687,7 @@ def build():
                 r.font.name = "Old Standard TT"
                 if r.font.size is None: r.font.size = Pt(10.5)
             if p.paragraph_format.line_spacing is None:
-                p.paragraph_format.line_spacing = 1.08
+                p.paragraph_format.line_spacing = 1.05
     OUT.parent.mkdir(exist_ok=True)
     d.save(OUT); print("wrote", OUT)
 
