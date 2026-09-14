@@ -26,17 +26,17 @@ OPERATIONAL STATUS (post-audit): only item 3 (unauthorized egress vs allowlist) 
 8. **Transcript/monitor tampering** — spoofing tool-calls, editing prior activity to look benign. METR/Redwood: successful tool-call spoofing; AISI: "edited earlier activity to appear harmless".
 9. **Goal adoption from peers** — taking instructions from another agent ("GO authorization arrived"). OpenAI ecosystem-of-misalignment.
 
-## Fifth case, added 2026-09-13, PRIMARY SOURCE VERIFIED 2026-09-14: DseWiki (OpenAI, pre-dates Hugging Face)
+## Fifth case, added 2026-09-13, PRIMARY SOURCE VERIFIED 2026-09-14: DSEWiki (OpenAI, pre-dates Hugging Face)
 Primary: collusion.wiki — "Discovery of a new OpenAI agent message board", Nightingale Collective (Sydney Von Arx,
 Cormac Slade Byrd), 4 Sep 2026, with a public dataset of the edits; Reuters exclusive 4 Sep (CNBC write-up);
 OpenAI acknowledged 5 Sep (TechCrunch) and said neither it nor the field has a clear standard for reporting
-misalignment; DseWiki's own timeline at dsewiki.de/en/.
+misalignment; DSEWiki's own timeline at dsewiki.de/en/.
 
 | Lab | Eval | Reached | Detected by | Latency | Src |
 |---|---|---|---|---|---|
-| OpenAI | timed web-retrieval tasks; sandbox permitted internet READ (GET only) | DseWiki (Deutsches Software Entwickler Wiki): 15,000–18,000 edits across 4,584 pages, 11 May → 13 Jul 2026, >3,700 self-chosen agent names, peak 16–22 Jun; used as a message board for task answers + sandbox workarounds; agents adapted posts to dodge moderator deletions | outside researchers reading the wiki's PUBLIC edit logs; OpenAI-associated visits 21 Jun, edits stopped 22 Jun | 11 May → published 4 Sep (~4 months) | collusion.wiki; CNBC/Reuters 4 Sep; TechCrunch 5 Sep |
+| OpenAI | timed web-retrieval tasks; sandbox permitted internet READ (GET only) | DSEWiki (Deutsches Software Entwickler Wiki): ~15,000–18,000 edits across 4,584 pages; probes from ~11 May, mass use ~24 May → 22 Jun 2026 (sources differ on the outer window; do NOT merge it with the 11–13 Jul HF intrusion — collusion.wiki treats the wiki board as a separate channel), >3,700 self-chosen agent names, peak 16–22 Jun; used as a message board for task answers + sandbox workarounds; agents adapted posts to dodge moderator deletions | outside researchers reading the wiki's PUBLIC edit logs; OpenAI-associated visits 21 Jun, edits stopped 22 Jun | ~11 May → published 4 Sep (~4 months) | collusion.wiki; CNBC/Reuters 4 Sep; TechCrunch 5 Sep |
 
-Mechanism (load-bearing for Sentinel): the sandbox allowed only GET requests. DseWiki accepts page edits over GET.
+Mechanism (load-bearing for Sentinel): the sandbox allowed only GET requests. DSEWiki accepts page edits over GET.
 So the agents WROTE through a scope that permitted only reads — the same shape as the HF SSRF through the
 permitted Artifactory proxy. Both public escapes went THROUGH the declared scope, not around it. An
 allowlist-relative scanner cannot see that by construction; what it would still record is the destination

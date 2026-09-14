@@ -50,11 +50,12 @@ P("In July 2026 two pre-release OpenAI models, running a cyber-capability evalua
   "incidents in its cyber evaluations, including one where the task prompt declared no internet access, a partner "
   "misconfiguration left it on, and the agent reached a real company that shared the fictional target's name; it was "
   "found months later by transcript review [3]. The UK AI Security Institute reported models on an intentionally "
-  "internet-connected cyber range reaching GitHub over Tor, caught by a Tor egress alarm [4]. And from 11 May to 13 July, "
-  "OpenAI evaluation agents with read-only internet access made 15,000 to 18,000 edits to DseWiki, a dormant German "
-  "programming wiki that accepts edits over GET, and used it as a message board for task answers and sandbox "
-  "workarounds; outside researchers found it by reading the wiki's public logs and published on 4 September, and "
-  "OpenAI acknowledged it the next day, saying the field has no agreed standard for reporting misalignment [5].")
+  "internet-connected cyber range reaching GitHub over Tor, caught by a Tor egress alarm [4]. A separate channel, unconnected to the Hugging Face "
+  "swarm, ran on a public wiki: OpenAI evaluation agents with read-only internet access probed DSEWiki, a dormant "
+  "German programming wiki, from around 11 May, and from roughly 24 May to 22 June used it as a message board for "
+  "task answers and sandbox workarounds, leaving on the order of 15,000 to 18,000 edits. Outside researchers found "
+  "it by reading the wiki's public logs and published on 4 September; OpenAI acknowledged it the next day, saying "
+  "the field has no agreed standard for reporting misalignment [5].")
 P("These cases share a shape that is not \"no monitor existed.\" In each one the operators knew the intended scope "
   "in prose: no internet; only the LLM API and the package proxy; only the range. Nowhere was that scope an "
   "artifact the transcript was checked against, and in every case the first signal came from somewhere else: an "
@@ -110,14 +111,16 @@ P("T3, a stated destination classified OUT, is the only PAGE. T1 (reading grader
   "Inspect gradings and noted that most environments offer no such predicate. Containment evaluations do: the allowlist.")
 H3("3.4 Inspect integration and replay")
 P("scanner.py wraps the same rule as an inspect_scout scanner over ChatMessageAssistant.tool_calls and returns a "
-  "Result whose answer is the host and whose metadata carries the first out-of-scope message index. It runs offline "
-  "over existing logs (scout scan sentinel/scanner.py -T ./logs) or attached to an evaluation. core.py runs the "
-  "identical rule over the JSON trace schema, so a party with only files reproduces the verdict. Fifteen tests pin "
-  "every number in this paper.")
+  "Result whose answer is the host and whose metadata carries the first out-of-scope message index. JSON replay over the trace schema "
+  "(sentinel score) is the supported interface, and is what a third party with only files runs; the inspect_scout "
+  "wrapper is in-tree and exercised by the test suite, over transcripts built in the test rather than over a "
+  "recorded evaluation log. Both paths execute the same rule. Fifteen tests pin every number in this paper.")
 H3("3.5 Fixtures and baseline")
-P("Three positives are reconstructions from the public write-ups, each carrying a source URL and "
-  "lab_detected_at_event taken from the published timeline: the Hugging Face escape (7 events), the AISI Tor "
-  "egress (4) and the Anthropic name-collision case (4). Three synthetic hard negatives cover the cases a naive "
+P("Three positives are reconstructions from the public write-ups, each carrying a source URL and a "
+  "lab_detected_at_event field: the Hugging Face escape (7 events), the AISI Tor egress (4) and the Anthropic "
+  "name-collision case (4). The calendar dates of each organisation's own detection are cited from the published "
+  "timelines; the event index is our mapping of that moment onto a short reconstruction, not a number any lab "
+  "published. Three synthetic hard negatives cover the cases a naive "
   "monitor gets wrong: an agent whose only egress is the permitted LLM API; in-sandbox reconnaissance that reads "
   "task files; and an internet-expected range where the agent hits allowlisted hosts. One synthetic fixture reads "
   "grader internals and should warn only. The baseline pages on any of curl, wget, nc, requests, socket or http "
@@ -141,11 +144,11 @@ TABLE([
  ["neg-allowed-llm-api", "negative", "no page", "—", "—", "@0  false"],
  ["neg-inscope-recon", "negative", "no page", "—", "—", "—"],
  ["neg-range-http", "negative", "no page", "—", "—", "@0  false"],
- ["warn-grader-probe", "warn-only", "no page (T1 warn)", "—", "—", "—"],
+ ["warn-grader-probe", "warn only", "no page (T1 warn)", "—", "—", "—"],
 ], "Table 1. Specification tests over the seven fixtures. \"Lab noticed\" is the event index at which the public "
    "timeline places the organisation's own detection, transferred into the reconstruction; it is a property of the "
    "reconstruction, not a measurement inside any lab. The keyword baseline has no allowlist.",
-   [1.55, 0.75, 0.95, 1.55, 0.85, 0.85])
+   [1.36, 0.60, 0.94, 1.92, 0.82, 0.86])
 P("Observation: Sentinel pages at the first non-allowlisted stated destination on all three positives and is "
   "silent on all three negatives. The keyword baseline false-pages on two negatives and, on every positive, its "
   "first hit is an in-scope or local command rather than the out-of-scope event. Interpretation: these are tests "
@@ -172,11 +175,11 @@ P("Under the correct scope the page lands at event 3. Event 2, the request to th
   "auditable evidence of out-of-scope egress, which in the reconstruction precedes the production intrusion (events "
   "5 and 6) and the organisation's own detection (event 6). It is not \"this would have stopped the breach.\" "
   "Prevention is default-deny egress plus a hardened permitted proxy, and a trace scanner supplies neither. The "
-  "wiki case has the same shape: the sandbox permitted only GET requests, and the agents wrote to a site that "
-  "accepts edits over GET [5]. In both public escapes the agent went through the scope, not around it. An "
+  "DSEWiki case has the same shape: the sandbox permitted only GET requests, and the wiki accepts page edits "
+  "over GET [5]. In both public escapes the agent went through the scope, not around it. An "
   "allowlist-relative scanner is blind to that by construction; what it would still have recorded is the "
-  "destination, dsewiki.de, if the declared scope had named which hosts read access was for.")
-FIGURE(FIG / "fig2_layers.png",
+  "destination host, dsewiki.de, had the declared scope named which hosts read access was for.")
+FIGURE(FIG / "fig2_layers_v3.png",
   "Figure 2. Four layers of containment evidence, with the Hugging Face reconstruction as the running example. "
   "Layers 1 and 2 are what this paper builds: the declared scope and the agent's stated destination, checked "
   "against it. Layer 3, observed flows diffed against the same allowlist, is not built and is the month of "
@@ -192,8 +195,10 @@ P("Every number above is deterministic and pinned by tests; there is no sampling
 H2("5. Discussion and Limitations")
 P("Theory of change. A lab attaches an allowlist to each evaluation class, with notes on why each entry is "
   "permitted. Sentinel runs offline over the campaign's Inspect logs in minutes, with no API key. The lab publishes "
-  "the allowlist, the per-run verdicts and the first out-of-scope index; a third party (an AISI, a partner such as "
-  "Hugging Face, or the AI Office under its Article 91 information powers) replays the verdict from those files. "
+  "the allowlist, the per-run verdicts and the first out-of-scope index; a third party replays the verdict from those files. Two kinds of "
+  "third party can: an auditor or an affected partner who has been given the files, and the Commission, which under "
+  "Article 91 of the AI Act may require a provider of a general-purpose AI model to hand over documentation "
+  "necessary to assess compliance. The first needs cooperation; only the second can compel. "
   "The cost of adoption is writing the allowlist, and that is the point: the artifact forces the scope to exist. "
   "This sits under, not beside, what the labs have already said they will build. AISI asks for monitoring \"able to "
   "flag or block out-of-scope actions as they happen\" with scope \"limited in advance\" [4]; OpenAI now requires "
@@ -208,7 +213,7 @@ BUL([
  "The fixtures and the rule have the same author. The specification tests therefore show consistency, not "
  "generalisation. If that assumption is wrong in the sense that real traces differ in form, the extractor is the "
  "part that breaks, and the ablation result is unaffected because it concerns the scope, not the extractor.",
- "Sentinel reads declared arguments. In its investigation of the Hugging Face incident, METR estimated that over 7% of the transcripts it reviewed contained spoofed tool calls "
+ "Sentinel reads declared arguments. In its investigation of the Hugging Face incident, METR reports that roughly 7% of the transcripts it evaluated were successfully spoofed in some places "
  "[13]; a determined agent can state one destination and reach another. Layer 3 is the answer; it is not built.",
  "The extractor is regular expressions. Destinations hidden in shell variables, base64, DNS exfiltration or "
  "IP-as-integer forms are missed. We have not measured a miss rate. Publishing the extractor publishes its gaps "
@@ -249,7 +254,7 @@ REFS = [
  "[2] Hugging Face, 2026. Agent intrusion: technical timeline. huggingface.co/blog/agent-intrusion-technical-timeline",
  "[3] Anthropic, 2026. Investigating incidents in our cybersecurity evaluations. anthropic.com/news/investigating-incidents-cybersecurity-evals",
  "[4] UK AI Security Institute, 4 August 2026. Incident report: unsanctioned agent behaviour during cyber testing (INC-2026-07-28-01). aisi.gov.uk/blog/incident-report-unsanctioned-agent-behaviour-during-cyber-testing",
- "[5] Von Arx, S., Slade Byrd, C. and the Nightingale Collective, 4 September 2026. Discovery of a new OpenAI agent message board (dataset and report). collusion.wiki. OpenAI acknowledgement of 5 September 2026 as reported by TechCrunch, techcrunch.com/2026/09/05/openai-confirms-wiki-incident-says-its-working-on-a-framework-for-more-disclosure/",
+ "[5] Von Arx, S., Slade Byrd, C. and the Nightingale Collective, 4 September 2026. Discovery of a new OpenAI agent message board: DSEWiki edit dataset and report. collusion.wiki. OpenAI acknowledgement of 5 September 2026 as reported by TechCrunch, techcrunch.com/2026/09/05/openai-confirms-wiki-incident-says-its-working-on-a-framework-for-more-disclosure/",
  "[6] Meridian Labs and UK AI Security Institute, 2026. Inspect Scout: in-depth analysis of AI agent transcripts. github.com/meridianlabs-ai/inspect_scout",
  "[7] UK AI Security Institute and Redwood Research, 2025. ControlArena. github.com/UKGovernmentBEIS/control-arena",
  "[8] Kutasov, J. et al., 2025. SHADE-Arena: evaluating sabotage and monitoring in LLM agents. arXiv:2506.15740",
@@ -284,7 +289,7 @@ TABLE([
  ["1 Grader / evaluation probing", "OpenAI [1], AISI [11]", "T1 WARN"],
  ["2 Sandbox / boundary testing", "OpenAI, Hugging Face [2]", "T2 WARN"],
  ["3 Unauthorised egress vs declared scope", "all four", "T3 PAGE"],
- ["4 Inter-agent message boards", "OpenAI (Artifactory WebDAV), AISI (GitHub), wiki [5]", "not covered"],
+ ["4 Inter-agent message boards", "OpenAI (Artifactory WebDAV), AISI (GitHub), DSEWiki [5]", "not covered"],
  ["5 Credential harvesting and reuse", "OpenAI, Anthropic", "not covered (env telemetry)"],
  ["6 Out-of-scope target enumeration", "Anthropic (~9,000 targets)", "T3 if a host is stated"],
  ["7 Persistence past a safe exit", "OpenAI (198/898 unsolved tasks)", "not covered (policy)"],
@@ -302,6 +307,17 @@ def set_cell_text(cell, text, bold=None, size=None):
     p.runs[0].text = text
     if bold is not None: p.runs[0].bold = bold
     if size: p.runs[0].font.size = size
+
+def fixed_layout(table, widths):
+    """Word/LO re-fit tables unless layout is fixed AND every cell repeats its width."""
+    tbl = table._tbl; tblPr = tbl.tblPr
+    tbl.autofit = False
+    lay = OxmlElement("w:tblLayout"); lay.set(qn("w:type"), "fixed"); tblPr.append(lay)
+    grid = tbl.find(qn("w:tblGrid"))
+    if grid is not None:
+        for gc, wdt in zip(grid.findall(qn("w:gridCol")), widths):
+            gc.set(qn("w:w"), str(int(wdt * 1440)))
+
 
 def add_borders(table):
     tbl = table._tbl
@@ -373,6 +389,7 @@ def build():
         elif kind == "tbl":
             rows, cap, widths = payload
             t = d.add_table(rows=len(rows), cols=len(rows[0])); add_borders(t)
+            if widths: fixed_layout(t, widths)
             for row in t.rows:
                 trPr = row._tr.get_or_add_trPr(); cs = OxmlElement('w:cantSplit'); trPr.append(cs)
                 for cell in row.cells:
@@ -380,7 +397,7 @@ def build():
             for i, row in enumerate(rows):
                 for j, val in enumerate(row):
                     cell = t.cell(i, j); cell.text = ""
-                    r = cell.paragraphs[0].add_run(val); r.font.size = Pt(8.5); r.bold = (i == 0)
+                    r = cell.paragraphs[0].add_run(val); r.font.size = Pt(8.1); r.bold = (i == 0)
                     if widths: cell.width = Inches(widths[j])
             c = d.add_paragraph(style="normal"); r = c.add_run(cap); r.font.size = Pt(9.5); r.italic = True
             c.paragraph_format.space_after = Pt(8)
