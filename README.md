@@ -140,9 +140,7 @@ suite: [`records/exploitgym-cyber-eval.json`](records/exploitgym-cyber-eval.json
 
 The sprint write-up (Apart Research AI Incident Response Sprint, September 2026) is
 [`report/build/Sentinel_Nagarkar_AIIR_Sprint_2026.pdf`](report/build/Sentinel_Nagarkar_AIIR_Sprint_2026.pdf):
-*Sentinel: the declared scope is the unit of containment evidence in agentic evaluations*. Figures
-regenerate from the fixtures with `python report/make_figures.py` (Figure 1) and
-`python report/make_fig2_v3.py` (Figure 2); the document builds with `python report/build_report.py`.
+*Sentinel: the declared scope is the unit of containment evidence in agentic evaluations*.
 
 ## Prior work
 
