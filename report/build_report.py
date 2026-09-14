@@ -575,7 +575,7 @@ def build():
         elif kind == "ref":
             n, text, links = payload
             p = d.add_paragraph(style="normal"); write_reference(p, text, links, Pt(10))
-            p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+            p.alignment = WD_ALIGN_PARAGRAPH.LEFT   # URLs cannot break, so justified lines stretch
             p.paragraph_format.space_after = Pt(4); p.paragraph_format.left_indent = Inches(0.28)
             p.paragraph_format.first_line_indent = Inches(-0.28)
             bookmark(p, "ref%d" % n)

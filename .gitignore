@@ -9,3 +9,4 @@ logs/**/run.txt
 logs/**/scout.txt
 report/build/pages/
 scans/
+~$*
