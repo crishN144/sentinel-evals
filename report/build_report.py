@@ -236,7 +236,7 @@ P("Observation: under the scope the sandbox actually had, the scanner is silent 
   "4 tunnels. Interpretation: the ablation's two failure "
   "modes reproduce on a record we did not write. The scope the evaluation had was a wildcard, and a wildcard "
   "produces no page on a real containment failure; any scope that named what the task was for would have paged "
-  "on the first day. Two caveats. 16,309 pages is an alert volume nobody reads, so the value is the first index and the "
+  "on the first day. Two caveats. 16,309 pages is an alert volume nobody reads, so the value is the first index, and the "
   "count is why layer 3, not layer 2, should gate paging; and T2 fired 1,147 times only because \"proxy\" appears "
   "in the workaround hostnames, a lexical accident we report as one.")
 P("The second record is a live run rather than a fixture: eight samples of inspect_evals/gdm_intercode_ctf with "
@@ -245,8 +245,7 @@ P("The second record is a live run rather than a fixture: eight samples of inspe
   "strings, python, submit) and solved all eight tasks; Sentinel paged on none, warned on none, the keyword "
   "baseline fired on none, and the inspect_scout wrapper returned the same eight verdicts from the recorded log. "
   "This is a negative control, not a detection result: a scanner that paged here would be wrong. It shows the rule "
-  "is silent on real tool calls it was not written against, and that the Inspect path works on a real log. "
-  "Cost: $0.14.")
+  "is silent on real tool calls it was not written against, and that the Inspect path works on a real log.")
 H2("5. Discussion and Limitations")
 P("Theory of change. A lab attaches an allowlist to each evaluation class, with notes on why each entry is "
   "permitted. Sentinel runs offline over the campaign's Inspect logs in minutes, with no API key. The lab publishes "
@@ -267,7 +266,7 @@ BUL([
  "OpenAI, Anthropic or AISI, and \"events earlier\" describes our reconstruction.",
  "The fixtures and the rule share an author, so the specification tests show consistency, not generalisation. The "
  "DSEWiki run fixes the events but not the scope: its two non-wildcard allowlists are ours, and a different "
- "reconstruction would move the first page. The wildcard row, the scope the sandbox actually had, does not move.",
+ "reconstruction would move the first page. The wildcard row, the scope the sandbox had, does not move.",
  "The live run is eight samples on tasks with no network, so it can only show silence. A positive live case needs "
  "an evaluation with internet on and a real allowlist. Wiki revision bodies are also a weaker kind of declared "
  "action than a curl argument: some URLs are links posted for other agents, not destinations reached.",
@@ -300,8 +299,8 @@ P("The public containment failures of 2026 were not failures of monitoring techn
 H2("Code and Data")
 P("Code repository: " + REPO + " (Apache-2.0, matching ExploitGym). Fixtures, allowlists, the ablation script, the filled record of "
   "Appendix C and the tests are in the repository; python -m pytest reproduces every number here with no model and no API "
-  "key. No lab transcripts are included because none are public. The DSEWiki export [5] is used as published, with "
-  "its manifest hash stated in Section 4.4 and a download script in the README; no other datasets were used.")
+  "key. The DSEWiki export [5] is used as published, with "
+  "its manifest hash stated in Section 4.4 and a download script in the README.")
 H2("Author Contributions")
 P("C.N. conceived the project, wrote the scanner, fixtures and tests, ran the ablation and wrote the report. "
   "Claude (Anthropic) was used as a coding and drafting assistant under the author's direction; every number was "
@@ -405,6 +404,40 @@ URL_IN_TEXT = re.compile(r"https?://[^\s,)]+")
 _BK = [0]
 
 
+MONO_FONT = "Courier New"
+_CMDS = ["scout scan sentinel/scanner.py -T logs/", "sentinel score traces/hf_openai.json", "sentinel score"]
+_IDENTS = ["ChatMessageAssistant.tool_calls", "lab_detected_at_event", "extract_destinations", "network_mode: none",
+           "internet_expected", "allowed_hosts", "allowed_cidrs", "classify(host)", "python -m pytest",
+           "scanner.py", "extract.py", "core.py", "nc/ncat", "socat", "ALLOWED", "LOOPBACK", "METADATA", "Result"]
+_CODE_RE = re.compile("|".join([re.escape(c) for c in _CMDS] + [r"\b" + re.escape(i) + r"\b" for i in _IDENTS]
+                               + [r"\bOUT\b", r"\bT[123]\b"]))
+
+
+def _noproof(run):
+    rpr = run._r.get_or_add_rPr(); e = OxmlElement("w:noProof"); e.set(qn("w:val"), "1"); rpr.append(e)
+
+
+def _shade_run(run, fill="EDEDED"):
+    rpr = run._r.get_or_add_rPr(); shd = OxmlElement("w:shd")
+    shd.set(qn("w:val"), "clear"); shd.set(qn("w:color"), "auto"); shd.set(qn("w:fill"), fill); rpr.append(shd)
+
+
+def _emit(paragraph, text, size=None, italic=None, bold=None):
+    """Plain text, with code identifiers set in monospace (and inline commands on a grey field)."""
+    pos = 0
+    for m in _CODE_RE.finditer(text):
+        if m.start() > pos:
+            _style(paragraph.add_run(text[pos:m.start()]), size, italic, bold)
+        r = paragraph.add_run(m.group(0)); _style(r, size, italic, bold)
+        r.font.name = MONO_FONT; r._r.get_or_add_rPr().rFonts.set(qn("w:hAnsi"), MONO_FONT)
+        if size is None: r.font.size = Pt(9.5)
+        _noproof(r)
+        if m.group(0) in _CMDS: _shade_run(r)
+        pos = m.end()
+    if pos < len(text):
+        _style(paragraph.add_run(text[pos:]), size, italic, bold)
+
+
 def _style(run, size=None, italic=None, bold=None, link=False):
     if size: run.font.size = size
     if italic is not None: run.italic = italic
@@ -449,7 +482,7 @@ def write_text(paragraph, text, *, size=None, italic=None, bold=None):
         return
     for m in CITE.finditer(text):
         if m.start() > pos:
-            _style(paragraph.add_run(text[pos:m.start()]), size, italic, bold)
+            _emit(paragraph, text[pos:m.start()], size, italic, bold)
         _style(paragraph.add_run("["), size, italic, bold)
         nums = [x.strip() for x in m.group(1).split(",")]
         for i, num in enumerate(nums):
@@ -459,7 +492,7 @@ def write_text(paragraph, text, *, size=None, italic=None, bold=None):
         _style(paragraph.add_run("]"), size, italic, bold)
         pos = m.end()
     if pos < len(text):
-        _style(paragraph.add_run(text[pos:]), size, italic, bold)
+        _emit(paragraph, text[pos:], size, italic, bold)
 
 
 def write_reference(paragraph, text, links, size):
@@ -558,7 +591,7 @@ def build():
         if kind == "h2":
             _h = d.add_paragraph(payload, style="Heading 2")
             _h.paragraph_format.keep_with_next = True
-            if payload.startswith(("Appendix A", "Appendix C")):
+            if payload.startswith(("Appendix A", "Appendix C", "References")):
                 _h.paragraph_format.page_break_before = True
         elif kind == "h3": d.add_paragraph(payload, style="Heading 3").paragraph_format.keep_with_next = True
         elif kind == "p":
@@ -568,9 +601,12 @@ def build():
         elif kind == "code":
             for line in payload.split("\n"):
                 cp = d.add_paragraph(style="normal"); r = cp.add_run(line)
-                r.font.name = "Menlo"; r.font.size = Pt(8.2)
-                cp.paragraph_format.left_indent = Inches(0.3); cp.paragraph_format.space_after = Pt(0)
-                cp.paragraph_format.line_spacing = 1.0
+                r.font.name = MONO_FONT; r._r.get_or_add_rPr().rFonts.set(qn("w:hAnsi"), MONO_FONT)
+                r.font.size = Pt(9.5); _noproof(r)
+                ppr = cp._p.get_or_add_pPr(); shd = OxmlElement("w:shd")
+                shd.set(qn("w:val"), "clear"); shd.set(qn("w:color"), "auto"); shd.set(qn("w:fill"), "EDEDED"); ppr.append(shd)
+                cp.paragraph_format.left_indent = Inches(0.3); cp.paragraph_format.right_indent = Inches(0.3)
+                cp.paragraph_format.space_after = Pt(0); cp.paragraph_format.line_spacing = 1.0
             d.paragraphs[-1].paragraph_format.space_after = Pt(6)
         elif kind == "ref":
             n, text, links = payload
@@ -617,10 +653,13 @@ def build():
                     pp.paragraph_format.line_spacing = 1.12
                     pp.paragraph_format.space_after = Pt(0)
                     pp.paragraph_format.space_before = Pt(0)
-                    for r in pp.runs: r.font.name = "Old Standard TT"
+                    for r in pp.runs:
+                        if r._r.find(".//" + qn("w:noProof")) is None: r.font.name = "Old Standard TT"
     for p in d.paragraphs:
         if p.style.name == "normal":
             for r in p.runs:
+                if r._r.find(".//" + qn("w:noProof")) is not None:   # code / identifier run: leave monospace
+                    continue
                 r.font.name = "Old Standard TT"
                 if r.font.size is None: r.font.size = Pt(10.5)
             if p.paragraph_format.line_spacing is None:
