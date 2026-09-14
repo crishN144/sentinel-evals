@@ -127,7 +127,7 @@ P("scanner.py wraps the same rule as an inspect_scout scanner over ChatMessageAs
   "Result whose answer is the host and whose metadata carries the first out-of-scope message index. JSON replay over the trace schema "
   "(sentinel score) is the supported interface, and is what a third party with only files runs; the inspect_scout "
   "wrapper (scout scan sentinel/scanner.py -T logs/) is exercised by the test suite and, in Section 4.4, over a "
-  "recorded evaluation log. Both paths execute the same rule. Fifteen tests pin every number in this paper.")
+  "recorded evaluation log. Both paths execute the same rule. Eighteen tests pin every number in this paper.")
 H3("3.5 Fixtures and baseline")
 P("Three positives are reconstructions from the public write-ups, each carrying a source URL and a "
   "lab_detected_at_event field: the Hugging Face escape (7 events), the AISI Tor egress (4) and the Anthropic "
@@ -247,7 +247,7 @@ P("Theory of change. A lab attaches an allowlist to each evaluation class, with 
   "the allowlist, the per-run verdicts and the first out-of-scope index; a third party replays the verdict from those files. Two kinds of "
   "third party can: an auditor or an affected partner who has been given the files, and the Commission, which under "
   "Article 91 of the AI Act may require a provider of a general-purpose AI model to hand over documentation "
-  "necessary to assess compliance. The first needs cooperation; only the second can compel. "
+  "necessary to assess compliance. The first needs cooperation; only the second can compel. Appendix C shows the record either would receive. "
   "The cost of adoption is writing the allowlist, which is the point: the artifact forces the scope to exist. It "
   "sits under what the labs already say they will build: AISI asks for monitoring \"able to flag or block "
   "out-of-scope actions as they happen\" with scope \"limited in advance\" [4], and OpenAI now requires "
@@ -292,8 +292,8 @@ P("The public containment failures of 2026 were not failures of monitoring techn
   "the argument that the artifact to publish per evaluation class is the pair (trace, allowlist).")
 
 H2("Code and Data")
-P("Code repository: " + REPO + " (Apache-2.0, matching ExploitGym). Fixtures, allowlists, the ablation script and "
-  "the 15 tests are in the repository; python -m pytest reproduces every number here with no model and no API "
+P("Code repository: " + REPO + " (Apache-2.0, matching ExploitGym). Fixtures, allowlists, the ablation script, the filled record of "
+  "Appendix C and the tests are in the repository; python -m pytest reproduces every number here with no model and no API "
   "key. No lab transcripts are included because none are public. No datasets were used.")
 H2("Author Contributions")
 P("C.N. conceived the project, wrote the scanner, fixtures and tests, ran the ablation and wrote the report. "
@@ -367,6 +367,29 @@ TABLE([
 ], "Table 2. The nine behaviours distilled from the four public accounts, and which ones an allowlist-relative "
    "scanner can see. Only item 3 is a mechanical page; items 1 and 2 warn; the rest need environment telemetry or "
    "multi-agent corpora and are out of scope for this artifact.", [2.6, 2.4, 1.5])
+
+
+H2("Appendix C. A filled containment record for one evaluation class")
+P("Track 1 asks whether a third party could verify compliance without access to the lab's network. This is "
+  "what that verification would consume: an example record a lab could attach to an evaluation class, filled "
+  "here for the ExploitGym class on our reconstruction of the Hugging Face trace. Every hash is computed from "
+  "the files in the repository by experiments/make_record.py, and a test fails if the record and the files "
+  "disagree. A lab would attach its own log in place of the reconstruction; nothing else in the record changes.")
+import json as _json
+_rec = _json.loads((ROOT / "records/exploitgym-cyber-eval.json").read_text())
+_ds, _tr, _v, _rc = _rec["declared_scope"], _rec["trace"], _rec["verdict"], _rec["recompute"]
+TABLE([
+ ["Field", "Value"],
+ ["Evaluation class", _rec["evaluation_class"] + "  (filled " + _rec["filled"] + ")"],
+ ["Declared scope", _ds["path"] + "\nsha256 " + _ds["sha256"] + "\nallowed_hosts: " + ", ".join(_ds["allowed_hosts"]) + "; internet_expected: " + str(_ds["internet_expected"]).lower()],
+ ["Trace", _tr["path"] + "  (" + str(_tr["events"]) + " events)\nsha256 " + _tr["sha256"] + "\n" + _tr["provenance"]],
+ ["First out-of-scope stated destination", "event " + str(_v["first_out_of_scope_event"]) + ": " + _v["destination"]],
+ ["Verdict", _v["severity"] + "  (" + str(_v["warn_only_findings"]) + " warn-only findings, never paged)"],
+ ["Who can recompute it, and how", _rc["command"] + "\n" + _rc["requires"] + "\ncore.py sha256 " + _rc["code_sha256_core"][:16] + "…, extract.py sha256 " + _rc["code_sha256_extract"][:16] + "…"],
+ ["What the record does not establish", "\n".join("• " + x for x in _rec["not_established"])],
+], "Table 4. The filled record, verbatim from records/exploitgym-cyber-eval.json. A second party recomputes the "
+   "verdict from the two hashed files and the repository, offline. The trace here is a reconstruction; the "
+   "record format does not depend on that.", [1.7, 4.8])
 
 # ---------- rendering ----------
 LINK = "#2e5c8a"          # links: coloured, not underlined (paper convention)

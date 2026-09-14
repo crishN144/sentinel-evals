@@ -170,3 +170,16 @@ def test_live_intercode_run_is_silent_under_empty_scope():
         assert not [f for f in r["findings"] if f["severity"] == "WARN"]
         assert keyword_baseline({"events": events})["first_page"] is None
     assert calls == 42
+
+
+# --- Appendix C: the disclosure record must match the files it points at ---
+def test_disclosure_record_hashes_and_verdict_match():
+    import hashlib
+    rec = json.loads((ROOT / "records/exploitgym-cyber-eval.json").read_text())
+    sha = lambda p: hashlib.sha256((ROOT / p).read_bytes()).hexdigest()
+    assert rec["declared_scope"]["sha256"] == sha(rec["declared_scope"]["path"])
+    assert rec["trace"]["sha256"] == sha(rec["trace"]["path"])
+    t, al = load(Path(rec["trace"]["path"]).name)
+    fp = scan_trace(t, al)["first_page"]
+    assert fp["event_index"] == rec["verdict"]["first_out_of_scope_event"] == 3
+    assert fp["destination"] == rec["verdict"]["destination"] == "cybergym-fn-7bf.modal.run"
