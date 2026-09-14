@@ -87,7 +87,7 @@ H2("2. Related Work")
 P("Trace monitors for agents exist and work. Inspect Scout ships scanners over evaluation transcripts, "
   "including reward-hacking and evaluation-awareness scanners [6]; ControlArena [7] and SHADE-Arena [8] monitor for "
   "side tasks and sabotage; Apollo's Watcher reads transcripts for scheming [9]; OpenAI now monitors chain-of-thought during "
-  "tool-using runs [1]. Preventive controls also exist: default-deny egress via Cilium or Squid FQDN allowlists, and ExploitGym "
+  "tool-using runs [1, 14]. Preventive controls also exist: default-deny egress via Cilium or Squid FQDN allowlists, and ExploitGym "
   "itself ships a Squid firewall that permits only LLM API endpoints [10].")
 P("The sprint's own materials describe this artifact. Track 1 example project 5 asks for an egress attestation "
   "spec v0.1: a signed network policy plus a flow-log digest an outside party could verify without network access "
@@ -152,7 +152,7 @@ P("Three positives are reconstructions from the public write-ups, each carrying 
   "with no allowlist. These fixtures were written by us, from descriptions, to a rule we wrote; Section 4 says what "
   "that does and does not license.")
 H3("3.6 What did not work")
-P("Two first-run failures became the paper. The Hugging Face trace first paged at event 2 on "
+P("Three first-run failures became the paper. The Hugging Face trace first paged at event 2 on "
   "artifactory.internal: our allowlist had omitted the package proxy, which OpenAI documents as a genuinely "
   "permitted egress. Adding it moved the page to event 3 and exposed the blind spot in Section 4.3, and the "
   "difference between the two allowlists became the ablation. Second, T1 fired on cat solution_template.py; grep "
