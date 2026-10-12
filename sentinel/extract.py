@@ -5,7 +5,8 @@ generic), return the network destinations (host[:port]) the command would try to
 reach. This is the load-bearing primitive: Sentinel classifies these against an
 allowlist. It is deliberately conservative — it extracts *stated* destinations
 from the declared action, and the Limitations section is explicit that declared
-args can be spoofed (METR observed ~7% tool-call spoofing).
+args can be spoofed (METR detected spoofing in small-scale tests; the undetected
+rate is unknown).
 """
 from __future__ import annotations
 

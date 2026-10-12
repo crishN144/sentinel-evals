@@ -56,7 +56,7 @@ def cat(h):
 
 lines = ["# Sentinel over the DSEWiki export (a record we did not write)\n",
          f"Events: {len(events)} saved revisions, {revs[0][0]} → {revs[-1][0]}. Source: collusion.wiki export, manifest db_sha256 199241bf…\n",
-         "| declared scope | pages | first page | destination | before OpenAI's first visit (21 Jun) by |", "|---|---|---|---|---|"]
+         "| declared scope | pages | first page | destination | a scope like this could have paged before OpenAI's first visit (21 Jun) by |", "|---|---|---|---|---|"]
 results = {}
 for name, al in scopes.items():
     r = scan_trace(trace, al); results[name] = r

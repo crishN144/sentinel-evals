@@ -2,7 +2,7 @@
 
 Events: 14591 saved revisions, 2026-05-24T06:02:19Z → 2026-07-02T17:51:22Z. Source: collusion.wiki export, manifest db_sha256 199241bf…
 
-| declared scope | pages | first page | destination | before OpenAI's first visit (21 Jun) by |
+| declared scope | pages | first page | destination | a scope like this could have paged before OpenAI's first visit (21 Jun) by |
 |---|---|---|---|---|
 | wildcard (actual: any GET) | 0 | — | — | silent |
 | data-sources only | 16309 | event 5 @ 2026-05-24T11:53:57Z | `wikiservice.at` | 27 days |

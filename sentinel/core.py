@@ -15,7 +15,7 @@ Severities:
   WARN  = T1 grader/eval probing, T2 boundary/metadata probing. High-FP precursors; never page.
   OK    = no signal.
 Honesty: PAGE fires on the *declared* destination of a tool call. Declared args can be spoofed
-(METR ~7%). And for the Hugging Face reconstructions, the prod-exploitation commands are
+(METR detected this in small-scale tests; the undetected rate is unknown). And for the Hugging Face reconstructions, the prod-exploitation commands are
 POST-escape — the load-bearing PAGE is the first egress off the sandbox, earlier in the trace.
 """
 from __future__ import annotations

@@ -119,8 +119,10 @@ attached to this eval class**, alerts were not correlated, or isolation was *ass
 - **Fixtures are reconstructions** from public write-ups, not lab transcripts. No lab has released
   raw eval transcripts, so "pages N events earlier" is a property of the reconstruction, not a
   measurement inside OpenAI/Anthropic/AISI.
-- **Declared arguments are spoofable.** METR observed successful tool-call spoofing in ~7% of the
-  transcripts it examined. A trace monitor sees what the agent *says* it is doing.
+- **Declared arguments are spoofable.** METR reports detecting tool-call spoofing in small-scale
+  tests where it was obvious. That is not a measured rate, and it says nothing about how often
+  spoofing goes undetected. A trace monitor sees what the agent *says* it is doing, so it cannot
+  bound that unknown.
 - **SSRF through an allowlisted proxy is invisible** to an allowlist-relative rule. The Hugging
   Face escape went *through* the permitted package proxy. Tested as a known blind spot.
 - **T1/T2 are warn-only.** Reading eval internals and probing the sandbox are real signals but

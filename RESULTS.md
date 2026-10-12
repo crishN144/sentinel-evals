@@ -24,9 +24,10 @@ been stopped. Prevention is default-deny egress plus hardening the permitted pro
 provides neither.
 
 **A record we did not write.** [REAL_DATA.md](REAL_DATA.md): the same rule over the DSEWiki export
-(14,591 agent revisions, collusion.wiki). Silent under the wildcard scope the sandbox actually had; first page at
-event 5 (24 May 11:53 UTC, `wikiservice.at`) under any scope naming the task's data sources — 27 days before the
-first OpenAI-associated visit. Both non-wildcard scopes there are ours; the events are not.
+(14,591 agent revisions, collusion.wiki). Silent under the wildcard scope the sandbox actually had. Under a
+scope naming the task's data sources, the first page is event 5 (24 May 11:53 UTC, `wikiservice.at`), 27 days before the
+first OpenAI-associated visit. Both non-wildcard scopes are our reconstruction, written after the fact, so this is what
+such a scope *could* have picked up had one been declared, not what a monitor *would* have caught. The events are not ours.
 
 **A live Inspect run (negative control).** Eight samples of `gdm_intercode_ctf` with an EMPTY declared
 scope (`network_mode: none`): 42 real tool calls, no page, no warn, baseline 0; `scout scan` returns the same
